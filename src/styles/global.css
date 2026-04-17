@@ -1,0 +1,229 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f3efe7;
+  --bg-elevated: rgba(255, 255, 255, 0.72);
+  --bg-strong: #fffdf8;
+  --bg-panel: rgba(255, 255, 255, 0.7);
+  --bg-chip: rgba(255, 255, 255, 0.78);
+  --sidebar-bg: rgba(250, 248, 243, 0.88);
+  --line: rgba(50, 55, 66, 0.1);
+  --line-strong: rgba(50, 55, 66, 0.18);
+  --text: #1b2330;
+  --muted: #617086;
+  --accent-blue: #276ef1;
+  --accent-blue-soft: rgba(39, 110, 241, 0.12);
+  --accent-emerald: #0f9d7a;
+  --accent-emerald-soft: rgba(15, 157, 122, 0.12);
+  --accent-amber: #cb8b2f;
+  --accent-amber-soft: rgba(203, 139, 47, 0.12);
+  --accent-red: #d04f45;
+  --accent-red-soft: rgba(208, 79, 69, 0.12);
+  --pill-good-text: #0a6c55;
+  --pill-neutral-text: #1c56c5;
+  --pill-alert-text: #a33b33;
+  --role-badge-bg: rgba(39, 110, 241, 0.12);
+  --role-badge-text: #1c56c5;
+  --criteria-chip-bg: rgba(39, 110, 241, 0.08);
+  --criteria-chip-text: #1f57c2;
+  --metric-track: rgba(27, 35, 48, 0.08);
+  --hero-ring-rest: #d8e1f0;
+  --hero-ring-core: rgba(255, 255, 255, 0.96);
+  --hero-ring-core-shadow: rgba(27, 35, 48, 0.08);
+  --spotlight-rank-bg: #1b2330;
+  --alert-text: #9f3b35;
+  --hero-aura: radial-gradient(circle, rgba(39, 110, 241, 0.18), transparent 68%);
+  --shadow-lg: 0 24px 60px rgba(27, 35, 48, 0.12);
+  --shadow-md: 0 12px 28px rgba(27, 35, 48, 0.08);
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(39, 110, 241, 0.12), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(15, 157, 122, 0.09), transparent 28%),
+    var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+[data-theme='dark'] {
+  --bg: #0f141c;
+  --bg-elevated: rgba(18, 24, 34, 0.78);
+  --bg-strong: #182130;
+  --bg-panel: rgba(20, 28, 40, 0.82);
+  --bg-chip: rgba(23, 33, 47, 0.88);
+  --sidebar-bg: rgba(11, 16, 24, 0.9);
+  --line: rgba(151, 170, 198, 0.14);
+  --line-strong: rgba(151, 170, 198, 0.22);
+  --text: #edf3ff;
+  --muted: #9cadc8;
+  --accent-blue: #70a2ff;
+  --accent-blue-soft: rgba(112, 162, 255, 0.16);
+  --accent-emerald: #3ec6a0;
+  --accent-emerald-soft: rgba(62, 198, 160, 0.16);
+  --accent-amber: #f0b458;
+  --accent-amber-soft: rgba(240, 180, 88, 0.18);
+  --accent-red: #f07c72;
+  --accent-red-soft: rgba(240, 124, 114, 0.16);
+  --pill-good-text: #87efd1;
+  --pill-neutral-text: #a8c4ff;
+  --pill-alert-text: #ffb6af;
+  --role-badge-bg: rgba(112, 162, 255, 0.18);
+  --role-badge-text: #cfe0ff;
+  --criteria-chip-bg: rgba(112, 162, 255, 0.16);
+  --criteria-chip-text: #c7d9ff;
+  --metric-track: rgba(237, 243, 255, 0.09);
+  --hero-ring-rest: #253248;
+  --hero-ring-core: rgba(11, 16, 24, 0.94);
+  --hero-ring-core-shadow: rgba(112, 162, 255, 0.22);
+  --spotlight-rank-bg: #111a26;
+  --alert-text: #ffc2bc;
+  --hero-aura: radial-gradient(circle, rgba(112, 162, 255, 0.16), transparent 68%);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.34);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.24);
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(112, 162, 255, 0.14), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(62, 198, 160, 0.08), transparent 28%),
+    var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: inherit;
+  color: inherit;
+  font-family: var(--font-sans);
+}
+
+html.theme-changing body,
+html.theme-changing #root,
+html.theme-changing aside,
+html.theme-changing section,
+html.theme-changing article,
+html.theme-changing div,
+html.theme-changing button,
+html.theme-changing span,
+html.theme-changing input,
+html.theme-changing select,
+html.theme-changing svg,
+html.theme-changing path,
+html.theme-changing polyline {
+  transition:
+    background-color 320ms ease,
+    background-image 320ms ease,
+    border-color 320ms ease,
+    color 320ms ease,
+    box-shadow 320ms ease,
+    fill 320ms ease,
+    stroke 320ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-changing body,
+  html.theme-changing #root,
+  html.theme-changing aside,
+  html.theme-changing section,
+  html.theme-changing article,
+  html.theme-changing div,
+  html.theme-changing button,
+  html.theme-changing span,
+  html.theme-changing input,
+  html.theme-changing select,
+  html.theme-changing svg,
+  html.theme-changing path,
+  html.theme-changing polyline {
+    transition: none !important;
+  }
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--line-strong);
+  background-clip: padding-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  aside,
+  aside * {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(34px) scale(0.985);
+  transition:
+    opacity 720ms ease,
+    transform 720ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@keyframes hero-bar-grow {
+  0% {
+    transform: scaleX(0);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll,
+  .reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -63,7 +63,7 @@ export function Sidebar({ navItems, activeView }) {
         >
           <span className="absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.32),transparent_55%)]"></span>
           <span className="relative z-10 font-display text-lg font-bold tracking-[0.08em] transition duration-300 lg:group-hover:scale-75 lg:group-hover:opacity-0">
-            EI
+            SD
           </span>
           {sidebarCollapsed ? (
             <Menu
@@ -84,7 +84,7 @@ export function Sidebar({ navItems, activeView }) {
           )}
         >
           <strong className="font-display text-lg font-bold text-[color:var(--text)]">
-            EngageIQ
+            Shinka Dynamics
           </strong>
           <p className="text-sm text-[color:var(--muted)]">
             Behavior Rating Suite

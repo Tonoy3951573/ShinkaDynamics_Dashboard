@@ -1,8 +1,16 @@
-import { cn, eyebrow, panelCard, panelChip, panelHeading, panelTitle } from '../../lib/ui'
+import {
+  cn,
+  eyebrow,
+  panelCard,
+  panelChip,
+  panelHeading,
+  panelTitle,
+} from '../../lib/ui'
 
 const metricToneClasses = {
   good: 'bg-[color:var(--accent-emerald-soft)] text-[color:var(--pill-good-text)]',
-  neutral: 'bg-[color:var(--accent-blue-soft)] text-[color:var(--pill-neutral-text)]',
+  neutral:
+    'bg-[color:var(--accent-blue-soft)] text-[color:var(--pill-neutral-text)]',
   alert: 'bg-[color:var(--accent-amber-soft)] text-[color:var(--accent-amber)]',
 }
 
@@ -32,8 +40,12 @@ export function OverviewStatsPanel({ stats, highlights }) {
               <span className="text-xs font-black uppercase tracking-[0.14em] opacity-80">
                 {item.label}
               </span>
-              <strong className="mt-3 block text-2xl font-bold">{item.value}</strong>
-              <p className="mt-2 text-sm leading-6 text-[color:var(--text)]/80">{item.detail}</p>
+              <strong className="mt-3 block text-2xl font-bold">
+                {item.value}
+              </strong>
+              <p className="mt-2 text-sm leading-6 text-[color:var(--text)]/80">
+                {item.detail}
+              </p>
             </article>
           ))}
         </div>
@@ -59,7 +71,9 @@ export function OverviewStatsPanel({ stats, highlights }) {
               <strong className="mt-2 block text-xl font-bold text-[color:var(--text)]">
                 {item.value}
               </strong>
-              <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">{item.detail}</p>
+              <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+                {item.detail}
+              </p>
             </article>
           ))}
         </div>

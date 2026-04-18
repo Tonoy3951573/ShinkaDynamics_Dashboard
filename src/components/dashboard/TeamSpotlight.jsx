@@ -1,4 +1,11 @@
-import { emptyState, eyebrow, panelCard, panelChip, panelHeading, panelTitle } from '../../lib/ui'
+import {
+  emptyState,
+  eyebrow,
+  panelCard,
+  panelChip,
+  panelHeading,
+  panelTitle,
+} from '../../lib/ui'
 
 export function TeamSpotlight({ employees }) {
   return (
@@ -32,19 +39,28 @@ export function TeamSpotlight({ employees }) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <strong className="block text-[color:var(--text)]">{employee.name}</strong>
-                    <p className="text-sm text-[color:var(--muted)]">{employee.role}</p>
+                    <strong className="block text-[color:var(--text)]">
+                      {employee.name}
+                    </strong>
+                    <p className="text-sm text-[color:var(--muted)]">
+                      {employee.role}
+                    </p>
                   </div>
                   <div className="text-left sm:text-right">
                     <strong className="block text-xl font-bold text-[color:var(--text)]">
                       {employee.score}
                     </strong>
-                    <span className="text-sm text-[color:var(--muted)]">{employee.delta} this week</span>
+                    <span className="text-sm text-[color:var(--muted)]">
+                      {employee.delta} this week
+                    </span>
                   </div>
                 </div>
-                <p className="mt-3 text-sm leading-6 text-[color:var(--text)]">{employee.strengths}</p>
+                <p className="mt-3 text-sm leading-6 text-[color:var(--text)]">
+                  {employee.strengths}
+                </p>
                 <p className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]">
-                  {employee.info?.peakStation ?? 'No station set'} - Risk {employee.info?.riskLevel ?? 'N/A'}
+                  {employee.info?.peakStation ?? 'No station set'} - Risk{' '}
+                  {employee.info?.riskLevel ?? 'N/A'}
                 </p>
               </div>
             </article>

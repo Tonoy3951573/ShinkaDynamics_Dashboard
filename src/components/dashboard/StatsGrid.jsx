@@ -12,7 +12,9 @@ export function StatsGrid({ stats }) {
           className={cn(surfaceCard, 'p-5')}
           style={{ '--item-delay': `${index * 90}ms` }}
         >
-          <p className="text-sm font-semibold text-[color:var(--muted)]">{stat.label}</p>
+          <p className="text-sm font-semibold text-[color:var(--muted)]">
+            {stat.label}
+          </p>
           <strong className="mt-4 block font-display text-4xl font-bold tracking-[-0.05em] text-[color:var(--text)]">
             {stat.value}
           </strong>

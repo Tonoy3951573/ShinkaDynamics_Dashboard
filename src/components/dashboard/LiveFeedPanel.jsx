@@ -1,10 +1,20 @@
 import { useState } from 'react'
 import { ScorePill } from './ScorePill'
-import { cn, emptyState, eyebrow, panelCard, panelChip, panelHeading, panelTitle } from '../../lib/ui'
+import {
+  cn,
+  emptyState,
+  eyebrow,
+  panelCard,
+  panelChip,
+  panelHeading,
+  panelTitle,
+} from '../../lib/ui'
 
 export function LiveFeedPanel({ feed, alerts }) {
   const [activeFeedKey, setActiveFeedKey] = useState('')
-  const fallbackFeedKey = feed[0] ? `${feed[0].employee}-${feed[0].station}` : ''
+  const fallbackFeedKey = feed[0]
+    ? `${feed[0].employee}-${feed[0].station}`
+    : ''
   const resolvedActiveFeedKey = feed.some(
     (item) => `${item.employee}-${item.station}` === activeFeedKey,
   )
@@ -54,15 +64,27 @@ export function LiveFeedPanel({ feed, alerts }) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <strong className="text-[color:var(--text)]">{item.employee}</strong>
+                    <strong className="text-[color:var(--text)]">
+                      {item.employee}
+                    </strong>
                     <ScorePill
                       value={`${item.score}`}
                       label={item.sentiment}
-                      tone={item.score >= 90 ? 'good' : item.score >= 80 ? 'neutral' : 'alert'}
+                      tone={
+                        item.score >= 90
+                          ? 'good'
+                          : item.score >= 80
+                            ? 'neutral'
+                            : 'alert'
+                      }
                     />
                   </div>
-                  <p className="mt-2 text-sm text-[color:var(--text)]">{item.status}</p>
-                  <span className="mt-2 block text-sm text-[color:var(--muted)]">{item.station}</span>
+                  <p className="mt-2 text-sm text-[color:var(--text)]">
+                    {item.status}
+                  </p>
+                  <span className="mt-2 block text-sm text-[color:var(--muted)]">
+                    {item.station}
+                  </span>
                 </div>
               </button>
             )
@@ -73,32 +95,42 @@ export function LiveFeedPanel({ feed, alerts }) {
         <div className="mt-5 rounded-[24px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-5">
           <div>
             <p className={eyebrow}>Selected Interaction</p>
-            <strong className="text-xl font-bold text-[color:var(--text)]">{activeFeed.employee}</strong>
+            <strong className="text-xl font-bold text-[color:var(--text)]">
+              {activeFeed.employee}
+            </strong>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="rounded-[20px] bg-[color:var(--bg-strong)] p-4">
               <span className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]">
                 Current station
               </span>
-              <strong className="mt-2 block text-[color:var(--text)]">{activeFeed.station}</strong>
+              <strong className="mt-2 block text-[color:var(--text)]">
+                {activeFeed.station}
+              </strong>
             </div>
             <div className="rounded-[20px] bg-[color:var(--bg-strong)] p-4">
               <span className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]">
                 Observed behavior
               </span>
-              <strong className="mt-2 block text-[color:var(--text)]">{activeFeed.status}</strong>
+              <strong className="mt-2 block text-[color:var(--text)]">
+                {activeFeed.status}
+              </strong>
             </div>
             <div className="rounded-[20px] bg-[color:var(--bg-strong)] p-4">
               <span className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]">
                 AI interpretation
               </span>
-              <strong className="mt-2 block text-[color:var(--text)]">{activeFeed.sentiment}</strong>
+              <strong className="mt-2 block text-[color:var(--text)]">
+                {activeFeed.sentiment}
+              </strong>
             </div>
             <div className="rounded-[20px] bg-[color:var(--bg-strong)] p-4">
               <span className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]">
                 Score
               </span>
-              <strong className="mt-2 block text-[color:var(--text)]">{activeFeed.score}</strong>
+              <strong className="mt-2 block text-[color:var(--text)]">
+                {activeFeed.score}
+              </strong>
             </div>
           </div>
         </div>
@@ -112,7 +144,9 @@ export function LiveFeedPanel({ feed, alerts }) {
             <strong className="text-sm font-black uppercase tracking-[0.14em] text-[color:var(--alert-text)]">
               {alert.severity}
             </strong>
-            <p className="mt-2 font-semibold text-[color:var(--text)]">{alert.title}</p>
+            <p className="mt-2 font-semibold text-[color:var(--text)]">
+              {alert.title}
+            </p>
             <span className="mt-2 block text-sm leading-6 text-[color:var(--muted)]">
               {alert.detail}
             </span>

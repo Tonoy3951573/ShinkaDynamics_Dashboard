@@ -44,7 +44,9 @@ export function HeroPanel({ site, summary, scoreDistribution }) {
             <strong className="block font-display text-5xl font-bold tracking-[-0.05em] text-[color:var(--text)]">
               {summary.score}
             </strong>
-            <span className="text-sm font-semibold text-[color:var(--muted)]">Overall score</span>
+            <span className="text-sm font-semibold text-[color:var(--muted)]">
+              Overall score
+            </span>
           </div>
         </div>
         <ScorePill value={summary.trend} label="vs last week" tone="good" />
@@ -57,8 +59,12 @@ export function HeroPanel({ site, summary, scoreDistribution }) {
             style={{ '--item-delay': `${index * 110}ms` }}
           >
             <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-sm font-semibold text-[color:var(--muted)]">{item.label}</span>
-              <strong className="text-lg font-bold text-[color:var(--text)]">{item.value}%</strong>
+              <span className="text-sm font-semibold text-[color:var(--muted)]">
+                {item.label}
+              </span>
+              <strong className="text-lg font-bold text-[color:var(--text)]">
+                {item.value}%
+              </strong>
             </div>
             <div className="h-2.5 overflow-hidden rounded-full bg-[color:var(--metric-track)]">
               <div

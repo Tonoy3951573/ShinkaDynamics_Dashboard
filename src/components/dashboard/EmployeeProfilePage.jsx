@@ -1,11 +1,25 @@
-import { cn, emptyState, eyebrow, ghostButton, metricBlock, metricLabel, metricValue, panelCard, panelChip, panelHeading, panelTitle } from '../../lib/ui'
+import {
+  cn,
+  emptyState,
+  eyebrow,
+  ghostButton,
+  metricBlock,
+  metricLabel,
+  metricValue,
+  panelCard,
+  panelChip,
+  panelHeading,
+  panelTitle,
+} from '../../lib/ui'
 
 export function EmployeeProfilePage({ employee, onBack }) {
   if (!employee) {
     return (
       <section className={cn(panelCard, 'reveal-on-scroll is-visible')}>
         <div className={emptyState}>
-          <strong className="block text-[color:var(--text)]">No employee selected.</strong>
+          <strong className="block text-[color:var(--text)]">
+            No employee selected.
+          </strong>
           <span className="mt-2 block text-sm text-[color:var(--muted)]">
             Select an employee from the employee list to view full details.
           </span>
@@ -52,11 +66,15 @@ export function EmployeeProfilePage({ employee, onBack }) {
           </div>
           <div className={metricBlock}>
             <span className={metricLabel}>Employee ID</span>
-            <strong className={metricValue}>{employee.profile?.employeeId ?? 'N/A'}</strong>
+            <strong className={metricValue}>
+              {employee.profile?.employeeId ?? 'N/A'}
+            </strong>
           </div>
           <div className={metricBlock}>
             <span className={metricLabel}>Risk level</span>
-            <strong className={metricValue}>{employee.info?.riskLevel ?? 'N/A'}</strong>
+            <strong className={metricValue}>
+              {employee.info?.riskLevel ?? 'N/A'}
+            </strong>
           </div>
         </div>
       </div>
@@ -72,19 +90,27 @@ export function EmployeeProfilePage({ employee, onBack }) {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className={metricBlock}>
               <span className={metricLabel}>Facial expression</span>
-              <strong className={metricValue}>{employee.metrics?.facialExpression ?? '--'}</strong>
+              <strong className={metricValue}>
+                {employee.metrics?.facialExpression ?? '--'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Verbal expression</span>
-              <strong className={metricValue}>{employee.metrics?.verbalExpression ?? '--'}</strong>
+              <strong className={metricValue}>
+                {employee.metrics?.verbalExpression ?? '--'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Greeting behavior</span>
-              <strong className={metricValue}>{employee.metrics?.greetingBehavior ?? '--'}</strong>
+              <strong className={metricValue}>
+                {employee.metrics?.greetingBehavior ?? '--'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Response time</span>
-              <strong className={metricValue}>{employee.metrics?.responseTime ?? '--'}</strong>
+              <strong className={metricValue}>
+                {employee.metrics?.responseTime ?? '--'}
+              </strong>
             </div>
           </div>
           <p className="mt-5 rounded-[22px] bg-[color:var(--bg-panel)] p-4 text-sm leading-6 text-[color:var(--text)]">
@@ -102,27 +128,39 @@ export function EmployeeProfilePage({ employee, onBack }) {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className={metricBlock}>
               <span className={metricLabel}>Shift</span>
-              <strong className={metricValue}>{employee.profile?.shift ?? 'N/A'}</strong>
+              <strong className={metricValue}>
+                {employee.profile?.shift ?? 'N/A'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Tenure</span>
-              <strong className={metricValue}>{employee.profile?.tenure ?? 'N/A'}</strong>
+              <strong className={metricValue}>
+                {employee.profile?.tenure ?? 'N/A'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Supervisor</span>
-              <strong className={metricValue}>{employee.profile?.supervisor ?? 'N/A'}</strong>
+              <strong className={metricValue}>
+                {employee.profile?.supervisor ?? 'N/A'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Peak station</span>
-              <strong className={metricValue}>{employee.info?.peakStation ?? 'N/A'}</strong>
+              <strong className={metricValue}>
+                {employee.info?.peakStation ?? 'N/A'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Interactions today</span>
-              <strong className={metricValue}>{employee.info?.interactionsToday ?? 'N/A'}</strong>
+              <strong className={metricValue}>
+                {employee.info?.interactionsToday ?? 'N/A'}
+              </strong>
             </div>
             <div className={metricBlock}>
               <span className={metricLabel}>Last coaching</span>
-              <strong className={metricValue}>{employee.info?.lastCoaching ?? 'N/A'}</strong>
+              <strong className={metricValue}>
+                {employee.info?.lastCoaching ?? 'N/A'}
+              </strong>
             </div>
           </div>
         </article>
@@ -163,12 +201,20 @@ export function EmployeeProfilePage({ employee, onBack }) {
                 className="flex flex-col gap-3 rounded-[22px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-4 sm:flex-row sm:items-start sm:justify-between"
               >
                 <div>
-                  <strong className="block text-[color:var(--text)]">{session.time}</strong>
-                  <span className="text-sm text-[color:var(--muted)]">{session.station}</span>
+                  <strong className="block text-[color:var(--text)]">
+                    {session.time}
+                  </strong>
+                  <span className="text-sm text-[color:var(--muted)]">
+                    {session.station}
+                  </span>
                 </div>
                 <div>
-                  <strong className="block text-[color:var(--text)]">Score {session.score}</strong>
-                  <span className="text-sm text-[color:var(--muted)]">{session.note}</span>
+                  <strong className="block text-[color:var(--text)]">
+                    Score {session.score}
+                  </strong>
+                  <span className="text-sm text-[color:var(--muted)]">
+                    {session.note}
+                  </span>
                 </div>
               </article>
             ))}

@@ -1,5 +1,14 @@
 import { useNavigate } from 'react-router-dom'
-import { cn, emptyState, eyebrow, metricLabel, panelCard, panelChip, panelHeading, panelTitle } from '../../lib/ui'
+import {
+  cn,
+  emptyState,
+  eyebrow,
+  metricLabel,
+  panelCard,
+  panelChip,
+  panelHeading,
+  panelTitle,
+} from '../../lib/ui'
 
 export function EmployeeDirectory({ employees }) {
   const navigate = useNavigate()
@@ -16,7 +25,9 @@ export function EmployeeDirectory({ employees }) {
 
       {employees.length === 0 ? (
         <div className={emptyState}>
-          <strong className="block text-[color:var(--text)]">No employees match the current filters.</strong>
+          <strong className="block text-[color:var(--text)]">
+            No employees match the current filters.
+          </strong>
           <span className="mt-2 block text-sm text-[color:var(--muted)]">
             Try widening the search or lowering the score threshold.
           </span>
@@ -45,9 +56,12 @@ export function EmployeeDirectory({ employees }) {
                       .toUpperCase()}
                   </span>
                   <div>
-                    <strong className="block text-[color:var(--text)]">{employee.name}</strong>
+                    <strong className="block text-[color:var(--text)]">
+                      {employee.name}
+                    </strong>
                     <span className="text-sm text-[color:var(--muted)]">
-                      Rank {String(index + 1).padStart(2, '0')} - {employee.role}
+                      Rank {String(index + 1).padStart(2, '0')} -{' '}
+                      {employee.role}
                     </span>
                   </div>
                 </div>
@@ -68,7 +82,9 @@ export function EmployeeDirectory({ employees }) {
                 </div>
               </div>
 
-              <p className="mt-4 text-sm leading-6 text-[color:var(--text)]">{employee.strengths}</p>
+              <p className="mt-4 text-sm leading-6 text-[color:var(--text)]">
+                {employee.strengths}
+              </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-[20px] bg-[color:var(--bg-strong)] p-4">

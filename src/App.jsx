@@ -8,12 +8,19 @@ import { EmployeesPage } from './pages/EmployeesPage'
 import { OverviewPage } from './pages/OverviewPage'
 
 function AppShell() {
-  const { activeView, dashboardData, mobileSidebarOpen, setMobileSidebarOpen, sidebarCollapsed } =
-    useDashboard()
+  const {
+    activeView,
+    dashboardData,
+    mobileSidebarOpen,
+    setMobileSidebarOpen,
+    sidebarCollapsed,
+  } = useDashboard()
   const sidebarWidth = sidebarCollapsed ? 104 : 280
 
   return (
-    <div className={mobileSidebarOpen ? 'overflow-hidden lg:overflow-visible' : ''}>
+    <div
+      className={mobileSidebarOpen ? 'overflow-hidden lg:overflow-visible' : ''}
+    >
       <div
         className={
           mobileSidebarOpen
@@ -23,11 +30,10 @@ function AppShell() {
         onClick={() => setMobileSidebarOpen(false)}
       ></div>
       <div
-        className="min-h-screen transition-none lg:grid lg:items-start lg:transition-[grid-template-columns] lg:duration-500 lg:ease-[cubic-bezier(0.22,1,0.36,1)]"
-        style={{ gridTemplateColumns: `${sidebarWidth}px minmax(0, 1fr)` }}
+        className="min-h-screen lg:flex lg:items-start"
       >
         <Sidebar navItems={dashboardData.navigation} activeView={activeView} />
-        <div className="min-w-0 px-4 py-5 sm:px-6 sm:py-7 lg:px-7 lg:py-7 xl:px-8 xl:pb-10">
+        <div className="min-w-0 flex-1 px-4 py-5 sm:px-6 sm:py-7 lg:px-7 lg:py-7 xl:px-8 xl:pb-10">
           <Header />
           <main className="space-y-6">
             <Routes>
@@ -35,7 +41,11 @@ function AppShell() {
               <Route path="/employees" element={<EmployeesPage />} />
               <Route
                 path="/employees/:employeeId"
-                element={<EmployeeProfileRoutePage employees={dashboardData.employees} />}
+                element={
+                  <EmployeeProfileRoutePage
+                    employees={dashboardData.employees}
+                  />
+                }
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

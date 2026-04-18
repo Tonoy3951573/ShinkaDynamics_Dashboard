@@ -12,7 +12,9 @@ function getSystemTheme() {
     return 'light'
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
 }
 
 function getActiveViewFromPathname(pathname) {
@@ -35,7 +37,9 @@ export function DashboardProvider({ children }) {
     }
 
     const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY)
-    return savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system'
+    return savedTheme === 'light' ||
+      savedTheme === 'dark' ||
+      savedTheme === 'system'
       ? savedTheme
       : 'system'
   })
@@ -81,12 +85,18 @@ export function DashboardProvider({ children }) {
     [feedFilter, minimumScore, normalizedQuery],
   )
 
+  // Search spans both summary text and nested metadata so the directory behaves
+  // like a global roster search instead of forcing users into one narrow field.
   const sortedEmployees = useMemo(
     () =>
       [...dashboardData.employees]
         .filter((employee) => {
-          const metricsContent = Object.values(employee.metrics ?? {}).join(' ').toLowerCase()
-          const infoContent = Object.values(employee.info ?? {}).join(' ').toLowerCase()
+          const metricsContent = Object.values(employee.metrics ?? {})
+            .join(' ')
+            .toLowerCase()
+          const infoContent = Object.values(employee.info ?? {})
+            .join(' ')
+            .toLowerCase()
           const matchesQuery =
             normalizedQuery.length === 0 ||
             employee.name.toLowerCase().includes(normalizedQuery) ||
@@ -103,7 +113,9 @@ export function DashboardProvider({ children }) {
           }
 
           if (employeeSort === 'momentum') {
-            return Number.parseInt(right.delta, 10) - Number.parseInt(left.delta, 10)
+            return (
+              Number.parseInt(right.delta, 10) - Number.parseInt(left.delta, 10)
+            )
           }
 
           return right.score - left.score
@@ -112,6 +124,8 @@ export function DashboardProvider({ children }) {
   )
 
   useEffect(() => {
+    // Theme transitions are toggled on the root so every themed surface animates
+    // together when the user switches modes.
     const root = document.documentElement
 
     root.classList.add('theme-changing')
@@ -131,7 +145,10 @@ export function DashboardProvider({ children }) {
       return
     }
 
-    window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(sidebarCollapsed))
+    window.localStorage.setItem(
+      SIDEBAR_COLLAPSED_STORAGE_KEY,
+      String(sidebarCollapsed),
+    )
   }, [sidebarCollapsed])
 
   useEffect(() => {
@@ -158,6 +175,8 @@ export function DashboardProvider({ children }) {
       return undefined
     }
 
+    // Reveal animations are opt-in and one-shot per route visit, with graceful
+    // fallbacks for older browsers and reduced-motion users.
     if (typeof IntersectionObserver === 'undefined') {
       document.querySelectorAll('.reveal-on-scroll').forEach((element) => {
         element.classList.add('is-visible')
@@ -194,6 +213,13 @@ export function DashboardProvider({ children }) {
     })
 
     return () => observer.disconnect()
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    setMobileSidebarOpen(false)
   }, [location.pathname])
 
   const toggleSidebarCollapsed = () => {
@@ -246,7 +272,11 @@ export function DashboardProvider({ children }) {
     ],
   )
 
-  return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>
+  return (
+    <DashboardContext.Provider value={value}>
+      {children}
+    </DashboardContext.Provider>
+  )
 }
 
 export { DashboardContext }

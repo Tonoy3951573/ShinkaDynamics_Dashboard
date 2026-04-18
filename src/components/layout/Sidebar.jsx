@@ -35,7 +35,10 @@ export function Sidebar({ navItems, activeView }) {
   } = useDashboard()
 
   const handleBrandToggle = () => {
-    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(min-width: 1024px)').matches
+    ) {
       toggleSidebarCollapsed()
     }
   }
@@ -43,34 +46,32 @@ export function Sidebar({ navItems, activeView }) {
   return (
     <aside
       className={cn(
-        'fixed inset-y-0 left-0 z-40 flex w-[min(19rem,calc(100vw-2rem))] flex-col border-r border-[--line] bg-[--sidebar-bg] px-4 py-4 backdrop-blur-xl transition-[transform,width,padding,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 lg:sticky lg:top-0 lg:min-h-screen lg:w-auto lg:px-[22px] lg:py-7',
+        'fixed inset-y-0 left-0 z-40 flex shrink-0 w-[min(19rem,calc(100vw-2rem))] flex-col border-r border-[color:var(--line)] bg-[color:var(--sidebar-bg)] px-4 py-4 backdrop-blur-xl transition-[width,transform] duration-300 ease-out sm:px-6 lg:sticky lg:top-0 lg:min-h-screen lg:bg-[color:var(--bg-strong)] lg:backdrop-blur-none lg:px-[28px] lg:py-7 lg:overflow-hidden',
         mobileSidebarOpen
           ? 'translate-x-0 shadow-[0_20px_50px_rgba(27,35,48,0.22)]'
           : '-translate-x-[calc(100%+1rem)] lg:translate-x-0',
-        sidebarCollapsed && 'lg:px-3',
+        sidebarCollapsed ? 'lg:w-[104px]' : 'lg:w-[280px]',
       )}
     >
-      <div
-        className={cn('mb-5 flex items-center gap-3 lg:mb-8', sidebarCollapsed && 'lg:justify-center')}
-      >
+      <div className="mb-5 flex items-center gap-3 lg:mb-8">
         <button
-          className="group relative grid h-12 w-12 shrink-0 place-items-center rounded-[18px] bg-[linear-gradient(145deg,#1b2330,#276ef1)] font-display text-lg font-bold text-white [box-shadow:var(--shadow-md)] transition duration-300 hover:-translate-y-0.5 hover:[box-shadow:0_18px_30px_rgba(39,110,241,0.28)] lg:cursor-pointer"
+          className="group relative grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[linear-gradient(145deg,#1b2330,#276ef1)] font-display text-lg font-bold text-white [box-shadow:var(--shadow-md)] transition duration-300 lg:hover:-translate-y-0.5 hover:[box-shadow:0_18px_30px_rgba(39,110,241,0.28)] lg:hover:[box-shadow:0_18px_30px_rgba(39,110,241,0.28)]"
           type="button"
           onClick={handleBrandToggle}
           aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className="absolute inset-0 rounded-[18px] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.32),transparent_55%)]"></span>
+          <span className="absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.32),transparent_55%)]"></span>
           <span className="relative z-10 font-display text-lg font-bold tracking-[0.08em] transition duration-300 lg:group-hover:scale-75 lg:group-hover:opacity-0">
-            EL
+            EI
           </span>
           {sidebarCollapsed ? (
-            <X
+            <Menu
               className="absolute z-10 hidden h-5 w-5 scale-75 opacity-0 transition duration-300 lg:block lg:group-hover:scale-100 lg:group-hover:opacity-100"
               strokeWidth={2.3}
             />
           ) : (
-            <Menu
+            <X
               className="absolute z-10 hidden h-5 w-5 scale-75 opacity-0 transition duration-300 lg:block lg:group-hover:scale-100 lg:group-hover:opacity-100"
               strokeWidth={2.3}
             />
@@ -78,19 +79,19 @@ export function Sidebar({ navItems, activeView }) {
         </button>
         <div
           className={cn(
-            'min-w-0 overflow-hidden transition-[max-width,opacity,transform] duration-400 ease-out',
-            sidebarCollapsed
-              ? 'lg:max-w-0 lg:opacity-0 lg:-translate-x-3'
-              : 'max-w-48 translate-x-0 opacity-100',
+            'flex flex-col justify-center overflow-hidden whitespace-nowrap transition-[width,opacity] duration-300 ease-out',
+            sidebarCollapsed ? 'lg:w-0 lg:opacity-0' : 'w-auto opacity-100 lg:w-[150px]',
           )}
         >
           <strong className="font-display text-lg font-bold text-[color:var(--text)]">
             EngageIQ
           </strong>
-          <p className="text-sm text-[color:var(--muted)]">Behavior Rating Suite</p>
+          <p className="text-sm text-[color:var(--muted)]">
+            Behavior Rating Suite
+          </p>
         </div>
         <button
-          className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[color:var(--line)] bg-[color:var(--bg-panel)] text-[color:var(--text)] transition hover:bg-[color:var(--bg-strong)] lg:hidden"
+          className="ml-auto inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[color:var(--line)] bg-[color:var(--bg-panel)] text-[color:var(--text)] transition hover:bg-[color:var(--bg-strong)] lg:hidden"
           type="button"
           onClick={() => setMobileSidebarOpen(false)}
           aria-label="Close sidebar"
@@ -98,6 +99,7 @@ export function Sidebar({ navItems, activeView }) {
           <X className="h-4 w-4" strokeWidth={2.2} />
         </button>
       </div>
+
       <nav className="grid gap-2" aria-label="Primary">
         {navItems.map((item) => {
           const href = navItemHrefByLabel[item.label] ?? null
@@ -105,44 +107,42 @@ export function Sidebar({ navItems, activeView }) {
           const isActive =
             (href === '/' && activeView === 'overview') ||
             (href === '/employees' &&
-              (activeView === 'employees' || activeView === 'employee-profile')) ||
+              (activeView === 'employees' ||
+                activeView === 'employee-profile')) ||
             (item.active && activeView === 'overview')
+
+          const baseLinkClass = cn(
+            'group flex items-center gap-3 rounded-lg p-2 text-left text-sm font-semibold transition-[width,background-color] duration-300 ease-out text-[color:var(--text)] hover:bg-[color:var(--bg-strong)] hover:text-[color:var(--accent-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent-blue-soft)] overflow-hidden whitespace-nowrap',
+            sidebarCollapsed ? 'w-full lg:w-12' : 'w-full lg:w-[224px]',
+          )
+
+          const iconClass = cn(
+            'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color:var(--line)] bg-[color:var(--bg-panel)] text-[color:var(--muted)] transition-colors duration-200 group-hover:border-transparent group-hover:bg-[color:var(--accent-blue-soft)] group-hover:text-[color:var(--accent-blue)]',
+          )
 
           if (!href) {
             return (
               <button
                 key={item.label}
-                className={cn(
-                  'w-full cursor-not-allowed rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[--muted] opacity-70 transition-[padding,background-color,color]',
-                  sidebarCollapsed && 'lg:px-2',
-                )}
+                className={cn(baseLinkClass, 'text-[color:var(--muted)] opacity-60 cursor-not-allowed')}
                 type="button"
                 aria-disabled="true"
                 title={sidebarCollapsed ? item.label : undefined}
               >
+                <span className={iconClass}>
+                  {Icon ? (
+                    <Icon className="h-4 w-4" strokeWidth={2.1} />
+                  ) : (
+                    <span className="h-2 w-2 rounded-full bg-current/40"></span>
+                  )}
+                </span>
                 <span
                   className={cn(
-                    'grid min-w-0 grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3',
-                    sidebarCollapsed && 'lg:grid-cols-1 lg:justify-items-center lg:gap-0',
+                    'transition-opacity duration-200',
+                    sidebarCollapsed ? 'lg:opacity-0' : 'opacity-100 lg:delay-100',
                   )}
                 >
-                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[--line] bg-[--bg-panel] text-[--muted]">
-                    {Icon ? (
-                      <Icon className="h-4 w-4" strokeWidth={2.05} />
-                    ) : (
-                      <span className="h-2.5 w-2.5 rounded-full bg-current/60"></span>
-                    )}
-                  </span>
-                  <span
-                    className={cn(
-                      'truncate transition-[max-width,opacity,transform] duration-300 ease-out',
-                      sidebarCollapsed
-                        ? 'lg:max-w-0 lg:opacity-0 lg:-translate-x-2'
-                        : 'max-w-48 opacity-100',
-                    )}
-                  >
-                    {item.label}
-                  </span>
+                  {item.label}
                 </span>
               </button>
             )
@@ -153,60 +153,65 @@ export function Sidebar({ navItems, activeView }) {
               key={item.label}
               to={href}
               onClick={() => setMobileSidebarOpen(false)}
-              className={() =>
+              className={({ isActive: navIsActive }) =>
                 cn(
-                  'group block w-full overflow-hidden rounded-2xl px-4 py-3 text-left text-sm font-semibold transition-[padding,background-color,color,box-shadow,border-color] duration-300 text-[--text] hover:bg-[--bg-strong] hover:text-[--accent-blue] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--accent-blue-soft]',
-                  sidebarCollapsed && 'lg:px-2',
-                  isActive &&
-                    'bg-[--bg-strong] text-[--accent-blue] [box-shadow:0_10px_24px_rgba(39,110,241,0.08)]',
+                  baseLinkClass,
+                  sidebarCollapsed &&
+                    'lg:hover:bg-[color:var(--accent-blue-soft)]',
+                  (isActive || navIsActive) &&
+                    'bg-[color:var(--bg-strong)] text-[color:var(--accent-blue)] shadow-sm',
+                  sidebarCollapsed &&
+                    (isActive || navIsActive) &&
+                    'lg:bg-[color:var(--accent-blue-soft)] lg:shadow-md',
                 )
               }
               aria-current={isActive ? 'page' : undefined}
               title={sidebarCollapsed ? item.label : undefined}
             >
-              <span
-                className={cn(
-                  'grid min-w-0 grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3',
-                  sidebarCollapsed && 'lg:grid-cols-1 lg:justify-items-center lg:gap-0',
-                )}
-              >
-                <span
-                  className={cn(
-                    'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[--line] bg-[--bg-panel] text-[--muted] transition group-hover:border-transparent group-hover:bg-[--accent-blue-soft]',
-                    isActive && 'border-transparent bg-[--accent-blue-soft] text-[--accent-blue]',
-                  )}
-                >
-                  {Icon ? (
-                    <Icon className="h-4 w-4" strokeWidth={2.05} />
-                  ) : (
-                    <span className="h-2.5 w-2.5 rounded-full bg-current/60"></span>
-                  )}
-                </span>
-                <span
-                  className={cn(
-                    'truncate transition-[max-width,opacity,transform] duration-300 ease-out',
-                    sidebarCollapsed
-                      ? 'lg:max-w-0 lg:opacity-0 lg:-translate-x-2'
-                      : 'max-w-48 opacity-100',
-                  )}
-                >
-                  {item.label}
-                </span>
-              </span>
+              {({ isActive: navIsActive }) => (
+                <>
+                  <span
+                    className={cn(
+                      iconClass,
+                      sidebarCollapsed &&
+                        (isActive || navIsActive) &&
+                        'lg:border-transparent lg:bg-transparent lg:text-[color:var(--accent-blue)] lg:group-hover:bg-transparent',
+                      !sidebarCollapsed &&
+                        (isActive || navIsActive) &&
+                        'border-transparent bg-[color:var(--accent-blue-soft)] text-[color:var(--accent-blue)]',
+                    )}
+                  >
+                    {Icon ? (
+                      <Icon className="h-4 w-4" strokeWidth={2.1} />
+                    ) : (
+                      <span className="h-2 w-2 rounded-full bg-current/40"></span>
+                    )}
+                  </span>
+                  <span
+                    className={cn(
+                      'transition-opacity duration-200',
+                      sidebarCollapsed ? 'lg:opacity-0' : 'opacity-100 lg:delay-100',
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </>
+              )}
             </NavLink>
           )
         })}
       </nav>
+
       <div
         className={cn(
           surfaceCard,
-          'mt-6 overflow-hidden p-4 transition-[padding,opacity,transform,max-height] duration-400 ease-out lg:mt-8',
-          sidebarCollapsed &&
-            'lg:max-h-0 lg:translate-y-3 lg:border-transparent lg:p-0 lg:opacity-0',
+          'mt-auto overflow-hidden transition-all duration-300 ease-out flex-shrink-0',
+          sidebarCollapsed ? 'lg:w-0 lg:h-0 lg:p-0 lg:opacity-0 lg:border-transparent lg:m-0' : 'w-full p-4 opacity-100 lg:w-[224px]',
         )}
       >
-        <p className="text-sm leading-6 text-[--muted]">
-          AI monitoring should stay paired with consent, policy disclosure, and supervisor review.
+        <p className="text-sm leading-6 text-[color:var(--muted)] whitespace-normal min-w-[192px]">
+          AI monitoring should stay paired with consent, policy disclosure, and
+          supervisor review.
         </p>
       </div>
     </aside>

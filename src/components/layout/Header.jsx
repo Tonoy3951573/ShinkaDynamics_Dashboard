@@ -10,8 +10,13 @@ const themeOptions = [
 ]
 
 export function Header() {
-  const { dashboardData, mobileSidebarOpen, setThemeMode, themeMode, toggleMobileSidebar } =
-    useDashboard()
+  const {
+    dashboardData,
+    mobileSidebarOpen,
+    setThemeMode,
+    themeMode,
+    toggleMobileSidebar,
+  } = useDashboard()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [settings, setSettings] = useState({
     liveAlerts: true,
@@ -63,7 +68,8 @@ export function Header() {
           <button
             className={cn(
               'group inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[color:var(--line)] bg-[color:var(--bg-panel)] text-[color:var(--text)] transition hover:-translate-y-0.5 hover:bg-[color:var(--bg-strong)] lg:hidden',
-              mobileSidebarOpen && 'border-[color:var(--accent-blue)] text-[color:var(--accent-blue)]',
+              mobileSidebarOpen &&
+                'border-[color:var(--accent-blue)] text-[color:var(--accent-blue)]',
             )}
             type="button"
             onClick={toggleMobileSidebar}
@@ -83,7 +89,9 @@ export function Header() {
               <X
                 className={cn(
                   'absolute inset-0 h-5 w-5 transition duration-300',
-                  mobileSidebarOpen ? 'scale-100 opacity-100 rotate-0' : 'scale-75 opacity-0 rotate-90',
+                  mobileSidebarOpen
+                    ? 'scale-100 opacity-100 rotate-0'
+                    : 'scale-75 opacity-0 rotate-90',
                 )}
                 strokeWidth={2.2}
               />
@@ -129,7 +137,8 @@ export function Header() {
           <button
             className={cn(
               'flex items-center gap-3 rounded-full border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-1.5 pl-4 transition',
-              isProfileOpen && 'border-[color:var(--line-strong)] bg-[color:var(--bg-strong)]',
+              isProfileOpen &&
+                'border-[color:var(--line-strong)] bg-[color:var(--bg-strong)]',
             )}
             type="button"
             onClick={() => setIsProfileOpen((current) => !current)}
@@ -160,8 +169,12 @@ export function Header() {
                     {initials}
                   </span>
                   <div>
-                    <strong className="block text-[color:var(--text)]">{user.name}</strong>
-                    <p className="text-sm text-[color:var(--muted)]">{user.role}</p>
+                    <strong className="block text-[color:var(--text)]">
+                      {user.name}
+                    </strong>
+                    <p className="text-sm text-[color:var(--muted)]">
+                      {user.role}
+                    </p>
                   </div>
                 </div>
                 <span
@@ -209,7 +222,9 @@ export function Header() {
                   aria-pressed={settings.liveAlerts}
                 >
                   <div>
-                    <strong className="block text-[color:var(--text)]">Live risk alerts</strong>
+                    <strong className="block text-[color:var(--text)]">
+                      Live risk alerts
+                    </strong>
                     <span className="text-sm text-[color:var(--muted)]">
                       Instant warnings for high-severity interactions
                     </span>
@@ -237,7 +252,9 @@ export function Header() {
                   aria-pressed={settings.supervisorDigest}
                 >
                   <div>
-                    <strong className="block text-[color:var(--text)]">Supervisor digest</strong>
+                    <strong className="block text-[color:var(--text)]">
+                      Supervisor digest
+                    </strong>
                     <span className="text-sm text-[color:var(--muted)]">
                       Daily summary delivered before closing review
                     </span>
@@ -265,7 +282,9 @@ export function Header() {
                   aria-pressed={settings.privacyMode}
                 >
                   <div>
-                    <strong className="block text-[color:var(--text)]">Privacy review mode</strong>
+                    <strong className="block text-[color:var(--text)]">
+                      Privacy review mode
+                    </strong>
                     <span className="text-sm text-[color:var(--muted)]">
                       Limit employee identity visibility during audits
                     </span>

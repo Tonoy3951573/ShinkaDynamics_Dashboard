@@ -1,4 +1,10 @@
-import { eyebrow, panelCard, panelChip, panelHeading, panelTitle } from '../../lib/ui'
+import {
+  eyebrow,
+  panelCard,
+  panelChip,
+  panelHeading,
+  panelTitle,
+} from '../../lib/ui'
 
 export function CriteriaPanel({ criteria }) {
   return (

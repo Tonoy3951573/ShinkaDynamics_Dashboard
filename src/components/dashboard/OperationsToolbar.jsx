@@ -60,7 +60,11 @@ export function OperationsToolbar() {
         </label>
       </div>
       <div className="mt-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Live feed filter">
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-label="Live feed filter"
+        >
           {feedFilterOptions.map((option) => (
             <button
               key={option.value}
@@ -96,13 +100,17 @@ export function OperationsToolbar() {
             <strong className="block text-xl font-bold text-[color:var(--text)]">
               {sortedEmployees.length}
             </strong>
-            <span className="text-sm text-[color:var(--muted)]">Employees visible</span>
+            <span className="text-sm text-[color:var(--muted)]">
+              Employees visible
+            </span>
           </div>
           <div className="rounded-[20px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] px-4 py-3">
             <strong className="block text-xl font-bold text-[color:var(--text)]">
               {filteredFeed.length}
             </strong>
-            <span className="text-sm text-[color:var(--muted)]">Feed items visible</span>
+            <span className="text-sm text-[color:var(--muted)]">
+              Feed items visible
+            </span>
           </div>
         </div>
       </div>

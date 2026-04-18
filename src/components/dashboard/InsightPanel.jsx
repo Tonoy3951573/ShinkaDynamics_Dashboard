@@ -1,4 +1,10 @@
-import { eyebrow, panelCard, panelChip, panelHeading, panelTitle } from '../../lib/ui'
+import {
+  eyebrow,
+  panelCard,
+  panelChip,
+  panelHeading,
+  panelTitle,
+} from '../../lib/ui'
 
 export function InsightPanel({ compliance, recommendations }) {
   return (
@@ -21,7 +27,9 @@ export function InsightPanel({ compliance, recommendations }) {
               className="flex items-start gap-3 rounded-[22px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] px-4 py-3"
             >
               <span className="mt-2 h-2.5 w-2.5 rounded-full bg-[color:var(--accent-blue)]"></span>
-              <p className="text-sm leading-6 text-[color:var(--text)]">{item}</p>
+              <p className="text-sm leading-6 text-[color:var(--text)]">
+                {item}
+              </p>
             </div>
           ))}
         </div>
@@ -41,7 +49,9 @@ export function InsightPanel({ compliance, recommendations }) {
               className="rounded-[22px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-4"
             >
               <strong className="text-[color:var(--text)]">{item.title}</strong>
-              <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">{item.detail}</p>
+              <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+                {item.detail}
+              </p>
             </article>
           ))}
         </div>

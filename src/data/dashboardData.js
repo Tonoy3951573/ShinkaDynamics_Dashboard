@@ -100,7 +100,11 @@ export const dashboardData = {
       weight: '35%',
       description:
         'Measures smiling frequency, relaxed expression, and positive customer-facing presence during the interaction window.',
-      metrics: ['Smile consistency 94%', 'Negative expression events 3%', 'Warmth score 92/100'],
+      metrics: [
+        'Smile consistency 94%',
+        'Negative expression events 3%',
+        'Warmth score 92/100',
+      ],
     },
     {
       title: 'Verbal expression',
@@ -108,7 +112,11 @@ export const dashboardData = {
       weight: '40%',
       description:
         'Evaluates politeness, calm tone, pace, and whether language stays respectful and service-oriented throughout the conversation.',
-      metrics: ['Politeness phrases 88%', 'Raised tone incidents 5', 'Empathy confidence 90/100'],
+      metrics: [
+        'Politeness phrases 88%',
+        'Raised tone incidents 5',
+        'Empathy confidence 90/100',
+      ],
     },
     {
       title: 'Greeting behavior',
@@ -116,7 +124,11 @@ export const dashboardData = {
       weight: '25%',
       description:
         'Tracks whether employees greet customers on entry, offer assistance proactively, and close the interaction courteously.',
-      metrics: ['Entry greeting 97%', 'Exit greeting 93%', 'Missed opportunities 4'],
+      metrics: [
+        'Entry greeting 97%',
+        'Exit greeting 93%',
+        'Missed opportunities 4',
+      ],
     },
   ],
   scoreTrend: [78, 80, 84, 83, 89, 92, 91],
@@ -155,12 +167,14 @@ export const dashboardData = {
   alerts: [
     {
       title: 'Tone escalation detected',
-      detail: 'Checkout 03 recorded a sharp vocal spike during a refund discussion.',
+      detail:
+        'Checkout 03 recorded a sharp vocal spike during a refund discussion.',
       severity: 'High',
     },
     {
       title: 'Missed greeting cluster',
-      detail: 'Three customers entered aisle entrance B with no greeting in the last 25 minutes.',
+      detail:
+        'Three customers entered aisle entrance B with no greeting in the last 25 minutes.',
       severity: 'Medium',
     },
   ],
@@ -188,7 +202,11 @@ export const dashboardData = {
         shift: 'Morning (8:00 AM - 4:00 PM)',
         tenure: '2 years 4 months',
         supervisor: 'Rafiul Karim',
-        certifications: ['Greeting Excellence', 'Premium Customer Handling', 'Conflict De-escalation'],
+        certifications: [
+          'Greeting Excellence',
+          'Premium Customer Handling',
+          'Conflict De-escalation',
+        ],
         weeklyScores: [
           { day: 'Mon', score: 92 },
           { day: 'Tue', score: 94 },
@@ -197,9 +215,24 @@ export const dashboardData = {
           { day: 'Fri', score: 96 },
         ],
         recentSessions: [
-          { time: '09:12 AM', station: 'Front entrance', score: 98, note: 'Proactive welcome with eye contact' },
-          { time: '11:40 AM', station: 'Women apparel', score: 94, note: 'Smooth product guidance and upsell' },
-          { time: '02:08 PM', station: 'Checkout support', score: 96, note: 'Calm support during payment delay' },
+          {
+            time: '09:12 AM',
+            station: 'Front entrance',
+            score: 98,
+            note: 'Proactive welcome with eye contact',
+          },
+          {
+            time: '11:40 AM',
+            station: 'Women apparel',
+            score: 94,
+            note: 'Smooth product guidance and upsell',
+          },
+          {
+            time: '02:08 PM',
+            station: 'Checkout support',
+            score: 96,
+            note: 'Calm support during payment delay',
+          },
         ],
       },
     },
@@ -226,7 +259,11 @@ export const dashboardData = {
         shift: 'Midday (10:00 AM - 6:00 PM)',
         tenure: '1 year 7 months',
         supervisor: 'Muntaha Islam',
-        certifications: ['Returns Desk Standards', 'Service Recovery', 'Policy Communication'],
+        certifications: [
+          'Returns Desk Standards',
+          'Service Recovery',
+          'Policy Communication',
+        ],
         weeklyScores: [
           { day: 'Mon', score: 86 },
           { day: 'Tue', score: 88 },
@@ -235,9 +272,24 @@ export const dashboardData = {
           { day: 'Fri', score: 91 },
         ],
         recentSessions: [
-          { time: '10:26 AM', station: 'Service desk', score: 89, note: 'Clear explanation of return policy' },
-          { time: '01:54 PM', station: 'Service desk', score: 93, note: 'Resolved exchange request empathetically' },
-          { time: '04:37 PM', station: 'Returns queue', score: 90, note: 'Handled delayed approval without escalation' },
+          {
+            time: '10:26 AM',
+            station: 'Service desk',
+            score: 89,
+            note: 'Clear explanation of return policy',
+          },
+          {
+            time: '01:54 PM',
+            station: 'Service desk',
+            score: 93,
+            note: 'Resolved exchange request empathetically',
+          },
+          {
+            time: '04:37 PM',
+            station: 'Returns queue',
+            score: 90,
+            note: 'Handled delayed approval without escalation',
+          },
         ],
       },
     },
@@ -273,9 +325,24 @@ export const dashboardData = {
           { day: 'Fri', score: 74 },
         ],
         recentSessions: [
-          { time: '02:18 PM', station: 'Checkout 03', score: 72, note: 'Tone tightened during refund request' },
-          { time: '05:03 PM', station: 'Checkout 03', score: 76, note: 'Recovered tone after supervisor prompt' },
-          { time: '07:49 PM', station: 'Checkout 02', score: 74, note: 'Fast checkout but greeting consistency low' },
+          {
+            time: '02:18 PM',
+            station: 'Checkout 03',
+            score: 72,
+            note: 'Tone tightened during refund request',
+          },
+          {
+            time: '05:03 PM',
+            station: 'Checkout 03',
+            score: 76,
+            note: 'Recovered tone after supervisor prompt',
+          },
+          {
+            time: '07:49 PM',
+            station: 'Checkout 02',
+            score: 74,
+            note: 'Fast checkout but greeting consistency low',
+          },
         ],
       },
     },
@@ -288,15 +355,18 @@ export const dashboardData = {
   recommendations: [
     {
       title: 'Daily greeting drill',
-      detail: 'Run a 10-minute opening routine focused on proactive hello and thank-you phrases.',
+      detail:
+        'Run a 10-minute opening routine focused on proactive hello and thank-you phrases.',
     },
     {
       title: 'Tone coaching for peak hours',
-      detail: 'Target checkout teams between 6 PM and 8 PM where impatience indicators rise fastest.',
+      detail:
+        'Target checkout teams between 6 PM and 8 PM where impatience indicators rise fastest.',
     },
     {
       title: 'Supervisor audit queue',
-      detail: 'Review all high-severity interactions before using them in employee performance conversations.',
+      detail:
+        'Review all high-severity interactions before using them in employee performance conversations.',
     },
   ],
 }

@@ -4,7 +4,8 @@ import { EmployeeProfilePage } from '../components/dashboard/EmployeeProfilePage
 export function EmployeeProfileRoutePage({ employees }) {
   const navigate = useNavigate()
   const { employeeId } = useParams()
-  const employee = employees.find((entry) => entry.profile?.employeeId === employeeId) ?? null
+  const employee =
+    employees.find((entry) => entry.profile?.employeeId === employeeId) ?? null
 
   if (!employee) {
     return <Navigate to="/employees" replace />

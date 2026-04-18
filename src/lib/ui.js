@@ -1,3 +1,5 @@
+// Shared Tailwind class recipes keep the visual system consistent across panels,
+// badges, and controls without repeating long utility strings in every component.
 export function cn(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -28,6 +30,8 @@ export const emptyState =
 export const metricBlock =
   'rounded-[22px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-4'
 
-export const metricLabel = 'text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]'
+export const metricLabel =
+  'text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]'
 
-export const metricValue = 'mt-2 block text-lg font-bold text-[color:var(--text)]'
+export const metricValue =
+  'mt-2 block text-lg font-bold text-[color:var(--text)]'

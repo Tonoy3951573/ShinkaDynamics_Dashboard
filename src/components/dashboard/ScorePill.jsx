@@ -2,8 +2,10 @@ import { cn } from '../../lib/ui'
 
 const toneClasses = {
   good: 'bg-[color:var(--accent-emerald-soft)] text-[color:var(--pill-good-text)]',
-  neutral: 'bg-[color:var(--accent-blue-soft)] text-[color:var(--pill-neutral-text)]',
-  alert: 'bg-[color:var(--accent-red-soft)] text-[color:var(--pill-alert-text)]',
+  neutral:
+    'bg-[color:var(--accent-blue-soft)] text-[color:var(--pill-neutral-text)]',
+  alert:
+    'bg-[color:var(--accent-red-soft)] text-[color:var(--pill-alert-text)]',
 }
 
 export function ScorePill({ value, label, tone = 'neutral' }) {

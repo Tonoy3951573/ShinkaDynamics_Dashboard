@@ -1,9 +1,86 @@
-import { createContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { dashboardData } from '../data/dashboardData'
+import { useAuth } from './AuthContext'
+import { api } from '../lib/api'
+import { useSocket } from '../hooks/useSocket'
 
 const THEME_STORAGE_KEY = 'engageiq-theme'
 const SIDEBAR_COLLAPSED_STORAGE_KEY = 'engageiq-sidebar-collapsed'
+const EMPLOYEES_STORAGE_KEY = 'engageiq-employees'
+
+const emptyDashboardData = {
+  scoreDistribution: [
+    { label: 'Joyful facial expression', value: 0, tone: 'neutral' },
+    { label: 'Polite verbal tone', value: 0, tone: 'neutral' },
+    { label: 'Greeting on entry and exit', value: 0, tone: 'neutral' },
+  ],
+  overviewStats: [
+    { label: 'Average response time', value: '0s', detail: 'Awaiting data', tone: 'neutral' },
+    { label: 'Escalation rate', value: '0%', detail: 'Awaiting data', tone: 'neutral' },
+    { label: 'Peak hour quality', value: '0', detail: 'Awaiting data', tone: 'neutral' },
+    { label: 'Training completion', value: '0%', detail: 'Awaiting data', tone: 'neutral' },
+  ],
+  overviewHighlights: [
+    { title: 'Best-performing zone', value: 'None', detail: 'Awaiting data' },
+    { title: 'Most common risk', value: 'None', detail: 'Awaiting data' },
+    { title: 'Supervisor action queue', value: '0 cases', detail: 'Awaiting data' },
+  ],
+  criteria: [
+    {
+      title: 'Facial expression',
+      score: 0,
+      weight: '35%',
+      description: 'Measures smiling frequency and positive customer-facing presence.',
+      metrics: ['Smile consistency 0%', 'Negative expression events 0', 'Warmth score 0/100'],
+    },
+    {
+      title: 'Verbal expression',
+      score: 0,
+      weight: '40%',
+      description: 'Evaluates politeness, calm tone, and respectfulness.',
+      metrics: ['Politeness phrases 0%', 'Raised tone incidents 0', 'Empathy confidence 0/100'],
+    },
+    {
+      title: 'Greeting behavior',
+      score: 0,
+      weight: '25%',
+      description: 'Tracks entry greetings and courteous closures.',
+      metrics: ['Entry greeting 0%', 'Exit greeting 0%', 'Missed opportunities 0'],
+    },
+  ],
+  scoreTrend: [0, 0, 0, 0, 0, 0, 0],
+  weekdayHighlights: [
+    { day: 'Mon', score: 0 },
+    { day: 'Tue', score: 0 },
+    { day: 'Wed', score: 0 },
+    { day: 'Thu', score: 0 },
+    { day: 'Fri', score: 0 },
+    { day: 'Sat', score: 0 },
+    { day: 'Sun', score: 0 },
+  ],
+  compliance: [
+    'Awaiting policy configuration',
+  ],
+  recommendations: [
+    { title: 'Awaiting data', detail: 'Recommendations will appear once employee interaction data is available.' }
+  ],
+  stats: [
+    { label: 'Employees scored today', value: '0', detail: 'Awaiting data' },
+    { label: 'Average interaction score', value: '0', detail: 'Awaiting data' },
+    { label: 'Greeting compliance', value: '0%', detail: 'Awaiting data' },
+    { label: 'Risky interactions', value: '0', detail: 'Awaiting data' },
+  ],
+  site: { label: 'Getting Started', name: 'Your Organization', updatedAt: 'Live', coverage: 'No cameras connected' },
+  summary: { score: 0, trend: '0%', insight: 'System awaiting initial data.' },
+  liveFeed: [],
+  navigation: [
+    { label: 'Overview', active: true },
+    { label: 'Live Monitoring' },
+    { label: 'Employee Scoring' },
+    { label: 'Alerts' },
+    { label: 'Policy & Audit' },
+  ]
+};
 
 const DashboardContext = createContext(null)
 
@@ -12,12 +89,21 @@ function getSystemTheme() {
     return 'light'
   }
 
+  // Trust the anti-FOUC script in index.html if it already evaluated the theme
+  if (document.documentElement.dataset.theme) {
+    return document.documentElement.dataset.theme
+  }
+
   return window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
     : 'light'
 }
 
 function getActiveViewFromPathname(pathname) {
+  if (pathname === '/monitoring') {
+    return 'monitoring'
+  }
+
   if (pathname.startsWith('/employees/')) {
     return 'employee-profile'
   }
@@ -26,11 +112,147 @@ function getActiveViewFromPathname(pathname) {
     return 'employees'
   }
 
+  if (pathname === '/alerts') {
+    return 'alerts'
+  }
+
   return 'overview'
 }
 
 export function DashboardProvider({ children }) {
   const location = useLocation()
+  const { user } = useAuth()
+  const [employees, setEmployees] = useState([])
+  const [dashboardData, setDashboardData] = useState(emptyDashboardData)
+  const [isLoading, setIsLoading] = useState(true)
+  const [alerts, setAlerts] = useState([])
+  const [alertsLoading, setAlertsLoading] = useState(false)
+
+  // ── Real-time event handler for WebSocket events ──────────────────────
+  const handleSocketEvent = useCallback((event, payload) => {
+    switch (event) {
+      case 'dev:clear_all':
+        setAlerts([])
+        setDashboardData((prev) => ({ ...prev, liveFeed: [] }))
+        break
+        
+      case 'alert:new':
+        setAlerts((current) => [payload, ...current])
+        break
+
+      case 'camera:detections_update':
+        setDashboardData((prev) => ({
+          ...prev,
+          cameraDetections: {
+            ...prev.cameraDetections,
+            [payload.cameraId]: payload.detections
+          }
+        }))
+        break
+
+      case 'feed:update':
+        setDashboardData((prev) => ({
+          ...prev,
+          liveFeed: [payload, ...(prev.liveFeed || []).slice(0, 49)],
+        }))
+        break
+
+      case 'employee:score_update': {
+        const { employeeId, score, delta, metrics } = payload
+        setEmployees((current) =>
+          current.map((emp) =>
+            emp.profile?.employeeId === employeeId
+              ? {
+                  ...emp,
+                  score: score ?? emp.score,
+                  delta: delta ?? emp.delta,
+                  metrics: { ...emp.metrics, ...metrics },
+                }
+              : emp,
+          ),
+        )
+        break
+      }
+
+      case 'insight:refresh':
+        setDashboardData((prev) => {
+          // Merge incoming fields — preserve existing data for anything not in the payload
+          const safeAnalytics = {
+            site: payload.site ?? prev.site,
+            summary: payload.summary ?? prev.summary,
+            stats: payload.stats ?? prev.stats,
+            alerts: payload.alerts ?? prev.alerts,
+            cameras: payload.cameras ?? prev.cameras,
+            scoreDistribution: payload.scoreDistribution ?? prev.scoreDistribution,
+            overviewStats: payload.overviewStats ?? prev.overviewStats,
+            overviewHighlights: payload.overviewHighlights ?? prev.overviewHighlights,
+            criteria: payload.criteria ?? prev.criteria,
+            scoreTrend: payload.scoreTrend ?? prev.scoreTrend,
+            weekdayHighlights: payload.weekdayHighlights ?? prev.weekdayHighlights,
+            compliance: payload.compliance ?? prev.compliance,
+            recommendations: payload.recommendations ?? prev.recommendations,
+          }
+          return { ...prev, ...safeAnalytics }
+        })
+        break
+
+      default:
+        console.warn('[socket] unhandled event:', event, payload)
+    }
+  }, [])
+
+  // ── Dev-only helper ──────────────────────────────────────────────────
+  // Calls handleSocketEvent directly so the DevMockControls panel can
+  // inject synthetic payloads without a live WebSocket connection.
+  const [mockSocketStatus, setMockSocketStatus] = useState(null)
+  const realSocket = useSocket(user ? localStorage.getItem('shinka-token') : null, handleSocketEvent)
+  const socketStatus = mockSocketStatus || realSocket.socketStatus
+
+  // Extend simulateEvent to handle disconnect toggle
+  const simulateEvent = useCallback(
+    (event, payload) => {
+      if (import.meta.env.DEV) {
+        console.info('[dev:simulateEvent]', event, payload)
+        if (event === 'dev:disconnect') {
+          setMockSocketStatus(prev => prev === 'disconnected' ? null : 'disconnected')
+          return
+        }
+        handleSocketEvent(event, payload)
+      }
+    },
+    [handleSocketEvent],
+  )
+
+  useEffect(() => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    Promise.all([
+      api('/employees?limit=200'),
+      api('/analytics')
+    ])
+      .then(([employeesResult, analyticsData]) => {
+        // Unwrap paginated envelope: { data: [...], pagination: {...} }
+        setEmployees(employeesResult.data || employeesResult)
+        setDashboardData(prev => ({ ...prev, ...analyticsData }))
+        setIsLoading(false)
+      })
+      .catch(err => {
+        console.error('Failed to fetch data from server:', err)
+        setEmployees([])
+        setIsLoading(false)
+      })
+  }, [user])
+
+  // Refetch analytics from the server so all dashboard panels update
+  const refreshAnalytics = async () => {
+    try {
+      const analyticsData = await api('/analytics')
+      setDashboardData(prev => ({ ...prev, ...analyticsData }))
+    } catch (err) {
+      console.error('Failed to refresh analytics:', err)
+    }
+  }
   const [themeMode, setThemeMode] = useState(() => {
     if (typeof window === 'undefined') {
       return 'system'
@@ -43,12 +265,32 @@ export function DashboardProvider({ children }) {
       ? savedTheme
       : 'system'
   })
+
+  const [systemTheme, setSystemTheme] = useState(() => getSystemTheme())
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+    
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e) => {
+      setSystemTheme(e.matches ? 'dark' : 'light')
+    }
+    
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  const resolvedTheme = useMemo(
+    () => (themeMode === 'system' ? systemTheme : themeMode),
+    [themeMode, systemTheme],
+  )
+  
   const [searchQuery, setSearchQuery] = useState('')
   const [feedFilter, setFeedFilter] = useState('all')
   const [employeeSort, setEmployeeSort] = useState('score')
   const [minimumScore, setMinimumScore] = useState(0)
   const [selectedDay, setSelectedDay] = useState(
-    dashboardData.weekdayHighlights.at(-1)?.day ?? 'Sun',
+    emptyDashboardData.weekdayHighlights.at(-1)?.day ?? 'Sun',
   )
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') {
@@ -59,16 +301,12 @@ export function DashboardProvider({ children }) {
   })
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
-  const resolvedTheme = useMemo(
-    () => (themeMode === 'system' ? getSystemTheme() : themeMode),
-    [themeMode],
-  )
   const activeView = getActiveViewFromPathname(location.pathname)
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
   const filteredFeed = useMemo(
     () =>
-      dashboardData.liveFeed.filter((item) => {
+      (dashboardData.liveFeed || []).filter((item) => {
         const matchesQuery =
           normalizedQuery.length === 0 ||
           item.employee.toLowerCase().includes(normalizedQuery) ||
@@ -82,14 +320,14 @@ export function DashboardProvider({ children }) {
 
         return matchesQuery && matchesFilter && item.score >= minimumScore
       }),
-    [feedFilter, minimumScore, normalizedQuery],
+    [dashboardData.liveFeed, feedFilter, minimumScore, normalizedQuery],
   )
 
   // Search spans both summary text and nested metadata so the directory behaves
   // like a global roster search instead of forcing users into one narrow field.
   const sortedEmployees = useMemo(
     () =>
-      [...dashboardData.employees]
+      [...employees]
         .filter((employee) => {
           const metricsContent = Object.values(employee.metrics ?? {})
             .join(' ')
@@ -99,9 +337,9 @@ export function DashboardProvider({ children }) {
             .toLowerCase()
           const matchesQuery =
             normalizedQuery.length === 0 ||
-            employee.name.toLowerCase().includes(normalizedQuery) ||
-            employee.role.toLowerCase().includes(normalizedQuery) ||
-            employee.strengths.toLowerCase().includes(normalizedQuery) ||
+            (employee.name || '').toLowerCase().includes(normalizedQuery) ||
+            (employee.role || '').toLowerCase().includes(normalizedQuery) ||
+            (employee.strengths || '').toLowerCase().includes(normalizedQuery) ||
             metricsContent.includes(normalizedQuery) ||
             infoContent.includes(normalizedQuery)
 
@@ -120,7 +358,7 @@ export function DashboardProvider({ children }) {
 
           return right.score - left.score
         }),
-    [employeeSort, minimumScore, normalizedQuery],
+    [employees, employeeSort, minimumScore, normalizedQuery],
   )
 
   useEffect(() => {
@@ -131,6 +369,13 @@ export function DashboardProvider({ children }) {
     root.classList.add('theme-changing')
     root.dataset.theme = resolvedTheme
     root.style.colorScheme = resolvedTheme
+    
+    if (resolvedTheme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+    
     window.localStorage.setItem(THEME_STORAGE_KEY, themeMode)
 
     const timeoutId = window.setTimeout(() => {
@@ -150,25 +395,6 @@ export function DashboardProvider({ children }) {
       String(sidebarCollapsed),
     )
   }, [sidebarCollapsed])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined
-    }
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = () => {
-      if (themeMode === 'system') {
-        const nextTheme = getSystemTheme()
-        document.documentElement.dataset.theme = nextTheme
-        document.documentElement.style.colorScheme = nextTheme
-      }
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [themeMode])
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -213,7 +439,7 @@ export function DashboardProvider({ children }) {
     })
 
     return () => observer.disconnect()
-  }, [location.pathname])
+  }, [location.pathname, isLoading])
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -230,12 +456,140 @@ export function DashboardProvider({ children }) {
     setMobileSidebarOpen((current) => !current)
   }
 
+  const addEmployee = async (newEmployee) => {
+    try {
+      const addedEmployee = await api('/employees', {
+        method: 'POST',
+        body: JSON.stringify(newEmployee)
+      })
+      setEmployees((current) => [...current, addedEmployee])
+      await refreshAnalytics()
+    } catch (err) {
+      console.error('Failed to add employee to server:', err)
+      setEmployees((current) => [...current, newEmployee])
+    }
+  }
+
+  const removeEmployee = async (employeeId) => {
+    try {
+      await api(`/employees/${employeeId}`, { method: 'DELETE' })
+      setEmployees((current) =>
+        current.filter((e) => e.profile?.employeeId !== employeeId)
+      )
+      await refreshAnalytics()
+      return true
+    } catch (err) {
+      console.error('Failed to remove employee:', err)
+      alert(err.message || 'Failed to remove employee')
+      return false
+    }
+  }
+
+  const addCamera = async (newCamera) => {
+    try {
+      const addedCamera = await api('/cameras', {
+        method: 'POST',
+        body: JSON.stringify(newCamera)
+      })
+      setDashboardData(prev => ({
+        ...prev,
+        cameras: [...(prev.cameras || []), addedCamera]
+      }))
+    } catch (err) {
+      console.error('Failed to add camera:', err)
+      // Alert the user about limits if it's a 403 error, handled gracefully or logged
+      alert(err.message || 'Failed to add camera');
+    }
+  }
+
+  const removeCamera = async (cameraId) => {
+    try {
+      await api(`/cameras/${cameraId}`, {
+        method: 'DELETE'
+      })
+      setDashboardData(prev => ({
+        ...prev,
+        cameras: (prev.cameras || []).filter(c => c.id !== cameraId)
+      }))
+    } catch (err) {
+      console.error('Failed to remove camera:', err)
+      alert(err.message || 'Failed to remove camera');
+    }
+  }
+
+  const fetchAlerts = async () => {
+    setAlertsLoading(true)
+    try {
+      const result = await api('/alerts?limit=200')
+      // Unwrap paginated envelope: { data: [...], pagination: {...} }
+      setAlerts(result.data || result)
+    } catch (err) {
+      console.error('Failed to fetch alerts:', err)
+    } finally {
+      setAlertsLoading(false)
+    }
+  }
+
+  const acknowledgeAlert = async (alertId) => {
+    try {
+      await api(`/alerts/${alertId}/acknowledge`, { method: 'PATCH' })
+      setAlerts((current) =>
+        current.map((a) =>
+          a.id === alertId ? { ...a, status: 'acknowledged' } : a
+        )
+      )
+    } catch (err) {
+      console.error('Failed to acknowledge alert:', err)
+    }
+  }
+
+  const resolveAlert = async (alertId) => {
+    try {
+      await api(`/alerts/${alertId}/resolve`, { method: 'PATCH' })
+      setAlerts((current) =>
+        current.map((a) =>
+          a.id === alertId
+            ? { ...a, status: 'resolved', resolved_at: new Date().toISOString() }
+            : a
+        )
+      )
+    } catch (err) {
+      console.error('Failed to resolve alert:', err)
+    }
+  }
+
+  const dismissAlert = async (alertId) => {
+    try {
+      await api(`/alerts/${alertId}/dismiss`, { method: 'PATCH' })
+      setAlerts((current) =>
+        current.map((a) =>
+          a.id === alertId ? { ...a, status: 'dismissed' } : a
+        )
+      )
+    } catch (err) {
+      console.error('Failed to dismiss alert:', err)
+    }
+  }
+
   const value = useMemo(
     () => ({
       activeView,
+      addCamera,
+      removeCamera,
+      addEmployee,
+      refreshAnalytics,
+      removeEmployee,
+      alerts,
+      alertsLoading,
+      fetchAlerts,
+      acknowledgeAlert,
+      resolveAlert,
+      dismissAlert,
       dashboardData,
+      employees,
       feedFilter,
       filteredFeed,
+      isLoading,
       minimumScore,
       mobileSidebarOpen,
       employeeSort,
@@ -251,6 +605,8 @@ export function DashboardProvider({ children }) {
       setSidebarCollapsed,
       setThemeMode,
       sidebarCollapsed,
+      simulateEvent,
+      socketStatus,
       sortedEmployees,
       themeMode,
       toggleMobileSidebar,
@@ -258,15 +614,22 @@ export function DashboardProvider({ children }) {
     }),
     [
       activeView,
+      alerts,
+      alertsLoading,
+      dashboardData,
+      employees,
       employeeSort,
       feedFilter,
       filteredFeed,
+      isLoading,
       minimumScore,
       mobileSidebarOpen,
       resolvedTheme,
       searchQuery,
       selectedDay,
       sidebarCollapsed,
+      simulateEvent,
+      socketStatus,
       sortedEmployees,
       themeMode,
     ],

@@ -47,14 +47,22 @@ export function EmployeeDirectory({ employees }) {
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-12 w-12 place-items-center rounded-full bg-[color:var(--accent-blue-soft)] font-bold text-[color:var(--accent-blue)]">
-                    {employee.name
-                      .split(' ')
-                      .map((part) => part[0])
-                      .join('')
-                      .slice(0, 2)
-                      .toUpperCase()}
-                  </span>
+                  {employee.photoUrl ? (
+                    <img 
+                      src={employee.photoUrl} 
+                      alt={employee.name}
+                      className="h-12 w-12 rounded-full object-cover ring-2 ring-[color:var(--line)] ring-offset-2 ring-offset-[color:var(--bg-panel)]"
+                    />
+                  ) : (
+                    <span className="grid h-12 w-12 place-items-center rounded-full bg-[color:var(--accent-blue-soft)] font-bold text-[color:var(--accent-blue)]">
+                      {employee.name
+                        .split(' ')
+                        .map((part) => part[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase()}
+                    </span>
+                  )}
                   <div>
                     <strong className="block text-[color:var(--text)]">
                       {employee.name}

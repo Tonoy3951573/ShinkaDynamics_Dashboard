@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { BellRing, Menu, X, LogOut } from 'lucide-react'
 import { cn, ghostButton, panelChip, surfaceCard } from '../../lib/ui'
 import { useDashboard } from '../../context/useDashboard'
+import { useAuth } from '../../context/AuthContext'
+import { AccountSettingsModal } from '../AccountSettingsModal'
+import { ConnectionStatus } from './ConnectionStatus'
 
 const themeOptions = [
   { value: 'light', label: 'Light' },
@@ -16,20 +20,44 @@ export function Header() {
     setThemeMode,
     themeMode,
     toggleMobileSidebar,
+    alerts,
+    fetchAlerts,
+    socketStatus,
   } = useDashboard()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [settings, setSettings] = useState({
     liveAlerts: true,
     supervisorDigest: true,
     privacyMode: false,
   })
   const profileRef = useRef(null)
-  const { user } = dashboardData
-  const initials = user.name
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const activeAlertCount = alerts.filter(
+    (a) => a.status === 'active' || a.status === 'acknowledged'
+  ).length
+
+  // Fetch alerts for the bell badge
+  useEffect(() => {
+    if (user) fetchAlerts()
+  }, [user])
+  
+  const displayUserName = user?.name
+    ? user.name
+    : user?.email
+      ? user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ')
+          .split(' ')
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ')
+      : 'User'
+
+  const initials = displayUserName
     .split(' ')
-    .map((part) => part[0])
-    .join('')
+    .map((w) => w.charAt(0))
     .slice(0, 2)
+    .join('')
     .toUpperCase()
 
   useEffect(() => {
@@ -107,7 +135,7 @@ export function Header() {
           </h1>
         </div>
       </div>
-      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4 sm:justify-end">
         <div
           className="inline-flex items-center gap-1 rounded-full border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-1"
           role="group"
@@ -130,8 +158,23 @@ export function Header() {
             </button>
           ))}
         </div>
-        <button className={ghostButton} type="button">
+        <ConnectionStatus status={socketStatus} />
+        <button className="hidden items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--bg-panel)] px-4 py-2.5 text-sm font-semibold text-[color:var(--text)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] hover:bg-[color:var(--bg-strong)] sm:inline-flex" type="button">
           Export Report
+        </button>
+        <button
+          className="relative inline-flex items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-2.5 text-[color:var(--text)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] hover:bg-[color:var(--bg-strong)]"
+          type="button"
+          onClick={() => navigate('/alerts')}
+          aria-label={`View alerts${activeAlertCount > 0 ? ` (${activeAlertCount} active)` : ''}`}
+          title="Alerts"
+        >
+          <BellRing className="h-4.5 w-4.5" strokeWidth={2.1} />
+          {activeAlertCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[0.6rem] font-black text-white shadow-sm">
+              {activeAlertCount > 99 ? '99+' : activeAlertCount}
+            </span>
+          )}
         </button>
         <div className="relative" ref={profileRef}>
           <button
@@ -147,7 +190,7 @@ export function Header() {
             aria-label="Open profile settings"
           >
             <span className="hidden text-sm font-semibold text-[color:var(--text)] sm:inline">
-              {user.name}
+              {displayUserName}
             </span>
             <span className="grid h-11 w-11 place-items-center rounded-full bg-[color:var(--accent-blue-soft)] font-bold text-[color:var(--accent-blue)]">
               {initials}
@@ -158,7 +201,7 @@ export function Header() {
             <div
               className={cn(
                 surfaceCard,
-                'absolute right-0 top-full z-20 mt-3 w-[min(24rem,calc(100vw-2rem))] p-5',
+                'fixed inset-x-3 top-20 z-50 mx-auto max-h-[calc(100dvh-6rem)] overflow-y-auto p-5 sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mx-0 sm:mt-3 sm:max-h-[80vh] sm:w-[min(24rem,calc(100vw-2rem))]',
               )}
               role="dialog"
               aria-label="Profile settings"
@@ -170,10 +213,13 @@ export function Header() {
                   </span>
                   <div>
                     <strong className="block text-[color:var(--text)]">
-                      {user.name}
+                      {displayUserName}
                     </strong>
-                    <p className="text-sm text-[color:var(--muted)]">
-                      {user.role}
+                    <span className="block text-xs text-[color:var(--muted)]">
+                      {user?.email}
+                    </span>
+                    <p className="mt-1 text-xs font-semibold text-[color:var(--accent-emerald)] capitalize">
+                      {user?.role || 'staff'}
                     </p>
                   </div>
                 </div>
@@ -197,15 +243,15 @@ export function Header() {
                       Active branch
                     </span>
                     <strong className="mt-2 block text-[color:var(--text)]">
-                      Gulshan Premium Store
+                      {user?.organization?.name || 'My Organization'}
                     </strong>
                   </div>
                   <div className="rounded-[20px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] p-4">
                     <span className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--muted)]">
                       Access level
                     </span>
-                    <strong className="mt-2 block text-[color:var(--text)]">
-                      Executive Control
+                    <strong className="mt-2 block text-[color:var(--text)] capitalize">
+                      {user?.role === 'admin' ? 'Executive Control' : user?.role || 'Staff'}
                     </strong>
                   </div>
                 </div>
@@ -308,20 +354,37 @@ export function Header() {
               </div>
 
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <button className={cn(ghostButton, 'flex-1')} type="button">
-                  Account Settings
+                <button 
+                  className={cn(ghostButton, 'flex-1 text-red-500 hover:text-red-600 hover:bg-red-500/10')} 
+                  type="button"
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    logout();
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
                 </button>
                 <button
                   className="flex-1 rounded-full bg-[color:var(--accent-blue)] px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:brightness-105"
                   type="button"
+                  onClick={() => {
+                    setIsSettingsModalOpen(true);
+                    setIsProfileOpen(false);
+                  }}
                 >
-                  Open Admin Panel
+                  Account Settings
                 </button>
               </div>
             </div>
           ) : null}
         </div>
       </div>
+
+      <AccountSettingsModal 
+        isOpen={isSettingsModalOpen} 
+        onClose={() => setIsSettingsModalOpen(false)} 
+      />
     </header>
   )
 }

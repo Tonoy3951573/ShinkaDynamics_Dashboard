@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   cn,
   eyebrow,
@@ -15,6 +16,8 @@ const metricToneClasses = {
 }
 
 export function OverviewStatsPanel({ stats, highlights }) {
+  const { t } = useTranslation('dashboard')
+
   return (
     <section
       className="reveal-on-scroll grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]"
@@ -23,12 +26,12 @@ export function OverviewStatsPanel({ stats, highlights }) {
       <article className={panelCard}>
         <div className={panelHeading}>
           <div>
-            <p className={eyebrow}>Operational Metrics</p>
-            <h3 className={panelTitle}>Branch health snapshot</h3>
+            <p className={eyebrow}>{t('overview.operationalMetrics')}</p>
+            <h3 className={panelTitle}>{t('overview.branchHealthSnapshot')}</h3>
           </div>
-          <span className={panelChip}>Executive summary</span>
+          <span className={panelChip}>{t('overview.executiveSummary')}</span>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {stats.map((item) => (
             <article
               key={item.label}
@@ -54,10 +57,10 @@ export function OverviewStatsPanel({ stats, highlights }) {
       <article className={panelCard}>
         <div className={panelHeading}>
           <div>
-            <p className={eyebrow}>Management Focus</p>
-            <h3 className={panelTitle}>Today&apos;s highlights</h3>
+            <p className={eyebrow}>{t('overview.managementFocus')}</p>
+            <h3 className={panelTitle}>{t('overview.todaysHighlights')}</h3>
           </div>
-          <span className={panelChip}>Actionable summary</span>
+          <span className={panelChip}>{t('overview.actionableSummary')}</span>
         </div>
         <div className="grid gap-3">
           {highlights.map((item) => (

@@ -39,7 +39,7 @@ export function OperationsToolbar() {
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search Nadia, Checkout 03, return policy..."
+            placeholder="Search by name, station, or keyword..."
             className="w-full rounded-[18px] border border-[color:var(--line)] bg-[color:var(--bg-panel)] px-4 py-3 text-[color:var(--text)] outline-none transition placeholder:text-[color:var(--muted)] focus:border-[color:var(--accent-blue)]"
           />
         </label>

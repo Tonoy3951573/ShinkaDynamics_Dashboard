@@ -2,7 +2,6 @@ import { NavLink } from 'react-router-dom'
 import {
   Activity,
   BellRing,
-  GitCompareArrows,
   LayoutDashboard,
   Menu,
   ShieldCheck,
@@ -14,14 +13,15 @@ import { useDashboard } from '../../context/useDashboard'
 
 const navItemHrefByLabel = {
   Overview: '/',
+  'Live Monitoring': '/monitoring',
   'Employee Scoring': '/employees',
+  Alerts: '/alerts',
 }
 
 const navIconByLabel = {
   Overview: LayoutDashboard,
   'Live Monitoring': Activity,
   'Employee Scoring': UsersRound,
-  'Branch Comparison': GitCompareArrows,
   Alerts: BellRing,
   'Policy & Audit': ShieldCheck,
 }
@@ -46,11 +46,11 @@ export function Sidebar({ navItems, activeView }) {
   return (
     <aside
       className={cn(
-        'fixed inset-y-0 left-0 z-40 flex shrink-0 w-[min(19rem,calc(100vw-2rem))] flex-col border-r border-[color:var(--line)] bg-[color:var(--sidebar-bg)] px-4 py-4 backdrop-blur-xl transition-[width,transform] duration-300 ease-out sm:px-6 lg:sticky lg:top-0 lg:min-h-screen lg:bg-[color:var(--bg-strong)] lg:backdrop-blur-none lg:px-[28px] lg:py-7 lg:overflow-hidden',
+        'fixed inset-y-0 left-0 z-40 flex shrink-0 w-[min(19rem,calc(100vw-2rem))] flex-col border-r border-(--line) bg-(--sidebar-bg) px-4 py-4 backdrop-blur-xl transition-[width,transform] duration-300 ease-out sm:px-6 lg:sticky lg:top-0 lg:min-h-screen lg:bg-(--bg-strong) lg:backdrop-blur-none lg:px-7 lg:py-7 lg:overflow-hidden',
         mobileSidebarOpen
           ? 'translate-x-0 shadow-[0_20px_50px_rgba(27,35,48,0.22)]'
           : '-translate-x-[calc(100%+1rem)] lg:translate-x-0',
-        sidebarCollapsed ? 'lg:w-[104px]' : 'lg:w-[280px]',
+        sidebarCollapsed ? 'lg:w-26' : 'lg:w-70',
       )}
     >
       <div className="mb-5 flex items-center gap-3 lg:mb-8">
@@ -80,18 +80,18 @@ export function Sidebar({ navItems, activeView }) {
         <div
           className={cn(
             'flex flex-col justify-center overflow-hidden whitespace-nowrap transition-[width,opacity] duration-300 ease-out',
-            sidebarCollapsed ? 'lg:w-0 lg:opacity-0' : 'w-auto opacity-100 lg:w-[150px]',
+            sidebarCollapsed ? 'lg:w-0 lg:opacity-0' : 'w-auto opacity-100 lg:w-37.5',
           )}
         >
-          <strong className="font-display text-lg font-bold text-[color:var(--text)]">
+          <strong className="font-display text-lg font-bold text-(--text)">
             Shinka Dynamics
           </strong>
-          <p className="text-sm text-[color:var(--muted)]">
+          <p className="text-sm text-(--muted)">
             Behavior Rating Suite
           </p>
         </div>
         <button
-          className="ml-auto inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[color:var(--line)] bg-[color:var(--bg-panel)] text-[color:var(--text)] transition hover:bg-[color:var(--bg-strong)] lg:hidden"
+          className="ml-auto inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-(--line) bg-(--bg-panel) text-(--text) transition hover:bg-(--bg-strong) lg:hidden"
           type="button"
           onClick={() => setMobileSidebarOpen(false)}
           aria-label="Close sidebar"
@@ -106,9 +106,11 @@ export function Sidebar({ navItems, activeView }) {
           const Icon = navIconByLabel[item.label]
           const isActive =
             (href === '/' && activeView === 'overview') ||
+            (href === '/monitoring' && activeView === 'monitoring') ||
             (href === '/employees' &&
               (activeView === 'employees' ||
                 activeView === 'employee-profile')) ||
+            (href === '/alerts' && activeView === 'alerts') ||
             (item.active && activeView === 'overview')
 
           const baseLinkClass = cn(
@@ -124,7 +126,7 @@ export function Sidebar({ navItems, activeView }) {
             return (
               <button
                 key={item.label}
-                className={cn(baseLinkClass, 'text-[color:var(--muted)] opacity-60 cursor-not-allowed')}
+                className={cn(baseLinkClass, 'text-(--muted) opacity-60 cursor-not-allowed')}
                 type="button"
                 aria-disabled="true"
                 title={sidebarCollapsed ? item.label : undefined}
@@ -157,12 +159,12 @@ export function Sidebar({ navItems, activeView }) {
                 cn(
                   baseLinkClass,
                   sidebarCollapsed &&
-                    'lg:hover:bg-[color:var(--accent-blue-soft)]',
+                    'lg:hover:bg-(--accent-blue-soft)',
                   (isActive || navIsActive) &&
-                    'bg-[color:var(--bg-strong)] text-[color:var(--accent-blue)] shadow-sm',
+                    'bg-(--bg-strong) text-(--accent-blue) shadow-sm',
                   sidebarCollapsed &&
                     (isActive || navIsActive) &&
-                    'lg:bg-[color:var(--accent-blue-soft)] lg:shadow-md',
+                    'lg:bg-(--accent-blue-soft) lg:shadow-md',
                 )
               }
               aria-current={isActive ? 'page' : undefined}
@@ -175,10 +177,10 @@ export function Sidebar({ navItems, activeView }) {
                       iconClass,
                       sidebarCollapsed &&
                         (isActive || navIsActive) &&
-                        'lg:border-transparent lg:bg-transparent lg:text-[color:var(--accent-blue)] lg:group-hover:bg-transparent',
+                        'lg:border-transparent lg:bg-transparent lg:text-(--accent-blue) lg:group-hover:bg-transparent',
                       !sidebarCollapsed &&
                         (isActive || navIsActive) &&
-                        'border-transparent bg-[color:var(--accent-blue-soft)] text-[color:var(--accent-blue)]',
+                        'border-transparent bg-(--accent-blue-soft) text-(--accent-blue)',
                     )}
                   >
                     {Icon ? (
@@ -205,11 +207,11 @@ export function Sidebar({ navItems, activeView }) {
       <div
         className={cn(
           surfaceCard,
-          'mt-auto overflow-hidden transition-all duration-300 ease-out flex-shrink-0',
-          sidebarCollapsed ? 'lg:w-0 lg:h-0 lg:p-0 lg:opacity-0 lg:border-transparent lg:m-0' : 'w-full p-4 opacity-100 lg:w-[224px]',
+          'mt-auto overflow-hidden transition-all duration-300 ease-out shrink-0',
+          sidebarCollapsed ? 'lg:w-0 lg:h-0 lg:p-0 lg:opacity-0 lg:border-transparent lg:m-0' : 'w-full p-4 opacity-100 lg:w-56',
         )}
       >
-        <p className="text-sm leading-6 text-[color:var(--muted)] whitespace-normal min-w-[192px]">
+        <p className="text-sm leading-6 text-(--muted) whitespace-normal min-w-48">
           AI monitoring should stay paired with consent, policy disclosure, and
           supervisor review.
         </p>

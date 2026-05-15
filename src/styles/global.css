@@ -35,6 +35,18 @@
   --hero-aura: radial-gradient(circle, rgba(39, 110, 241, 0.18), transparent 68%);
   --shadow-lg: 0 24px 60px rgba(27, 35, 48, 0.12);
   --shadow-md: 0 12px 28px rgba(27, 35, 48, 0.08);
+  /* Nord palette tokens (ConnectionStatus) */
+  --nord-polar-0: #2e3440;
+  --nord-polar-1: #3b4252;
+  --nord-polar-2: #434c5e;
+  --nord-polar-3: #4c566a;
+  --nord-snow-0: #d8dee9;
+  --nord-snow-1: #e5e9f0;
+  --nord-snow-2: #eceff4;
+  --nord-green: #a3be8c;
+  --nord-yellow: #ebcb8b;
+  --nord-red: #bf616a;
+  --nord-blue: #81a1c1;
   color: var(--text);
   background:
     radial-gradient(circle at top left, rgba(39, 110, 241, 0.12), transparent 24%),
@@ -207,18 +219,6 @@ svg {
   transform: translateY(0) scale(1);
 }
 
-@keyframes hero-bar-grow {
-  0% {
-    transform: scaleX(0);
-    opacity: 0.5;
-  }
-
-  100% {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .reveal-on-scroll,
   .reveal-on-scroll.is-visible {
@@ -226,4 +226,428 @@ svg {
     transform: none;
     transition: none;
   }
+}
+
+/* ============================================================================
+ * KEYFRAMES — consolidated from all component CSS files
+ * ========================================================================= */
+
+/* ── LiveFeedPanel: feed item entrance ──────────────────────────────────── */
+@keyframes feed-item-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+    clip-path: inset(0 0 100% 0 round 24px);
+  }
+  60% {
+    clip-path: inset(0 0 0% 0 round 24px);
+    transform: translateY(2px) scale(1.005);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    clip-path: inset(0 0 0% 0 round 24px);
+  }
+}
+
+/* ── LiveFeedPanel: chip pulse ──────────────────────────────────────────── */
+@keyframes chip-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── LiveFeedPanel / AlertCard: breathing glow ──────────────────────────── */
+@keyframes breathe-emerald {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0px color-mix(in srgb, var(--accent-emerald) 40%, transparent);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 16px color-mix(in srgb, var(--accent-emerald) 0%, transparent);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0px color-mix(in srgb, var(--accent-blue) 40%, transparent);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px color-mix(in srgb, var(--accent-blue) 0%, transparent);
+  }
+}
+
+/* ── HeroPanel: bar grow + ring grow ────────────────────────────────────── */
+@keyframes hero-bar-grow {
+  0% {
+    transform: scaleX(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes hero-ring-grow {
+  0% {
+    stroke-dashoffset: 100;
+  }
+}
+
+@keyframes dist-item-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── AlertCard: card entrance + critical dot ping ──────────────────────── */
+@keyframes alert-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes critical-dot-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* ── ConnectionStatus: pulse glows ──────────────────────────────────────── */
+@keyframes pulse-glow-green {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50%      { opacity: 0.45; transform: scale(1.8); }
+}
+
+@keyframes pulse-beat-yellow {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.35); }
+}
+
+@keyframes pulse-glow-yellow {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50%      { opacity: 0.4; transform: scale(2); }
+}
+
+@keyframes pulse-beat-red {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.7; }
+}
+
+@keyframes pulse-glow-red {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50%      { opacity: 0.5; transform: scale(2.2); }
+}
+
+@keyframes status-fade-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── DisconnectOverlay ──────────────────────────────────────────────────── */
+@keyframes overlay-fade-in {
+  from { opacity: 0; backdrop-filter: blur(0px) grayscale(0%); }
+  to   { opacity: 1; backdrop-filter: blur(12px) grayscale(50%); }
+}
+
+@keyframes modal-slide-up {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes icon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* ── ErrorBoundary ──────────────────────────────────────────────────────── */
+@keyframes error-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.7; transform: scale(0.92); }
+}
+
+@keyframes error-modal-slide-up {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── ToastNotification ─────────────────────────────────────────────────── */
+@keyframes toast-enter {
+  from { opacity: 0; transform: translateX(110%) scale(0.94); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    max-height: 200px;
+    margin-bottom: 0;
+  }
+  80% {
+    opacity: 0;
+    transform: translateX(60%) scale(0.96);
+    max-height: 200px;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(80%) scale(0.96);
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+  }
+}
+
+@keyframes toast-progress {
+  from { transform: scaleX(1); opacity: 0.7; }
+  to   { transform: scaleX(0); opacity: 0.3; }
+}
+
+/* ── RedAlertOverlay: critical pulse ───────────────────────────────────── */
+@keyframes critical-pulse {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0px 0px rgba(191, 97, 106, 0),
+      inset 0 0 60px 0px rgba(191, 97, 106, 0);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0px 2px rgba(191, 97, 106, 0.28),
+      inset 0 0 80px 0px rgba(191, 97, 106, 0.10);
+  }
+}
+
+@keyframes critical-pulse-dark {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0px 0px rgba(191, 97, 106, 0),
+      inset 0 0 60px 0px rgba(191, 97, 106, 0);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0px 2px rgba(191, 97, 106, 0.22),
+      inset 0 0 100px 0px rgba(191, 97, 106, 0.08);
+  }
+}
+
+/* ── DevMockControls ───────────────────────────────────────────────────── */
+@keyframes dmc-panel-enter {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes dmc-panel-exit {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(12px) scale(0.96); }
+}
+
+@keyframes dmc-btn-flash {
+  0%   { opacity: 1; }
+  30%  { opacity: 0.55; }
+  100% { opacity: 1; }
+}
+
+/* ── AddEmployeeModal ──────────────────────────────────────────────────── */
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================================================
+ * REDUCED MOTION OVERRIDES
+ * ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes feed-item-enter {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+}
+
+/* ============================================================================
+ * UTILITY CLASSES — complex patterns that can't be expressed inline
+ * ========================================================================= */
+
+/* ── App shell critical pulse ──────────────────────────────────────────── */
+.app-shell {
+  transition: box-shadow 800ms ease;
+}
+
+.app-shell--critical {
+  animation: critical-pulse 3s ease-in-out infinite;
+  border-radius: 0;
+}
+
+[data-theme='dark'] .app-shell--critical {
+  animation: critical-pulse-dark 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell--critical {
+    animation: none;
+    box-shadow: inset 0 0 0 2px rgba(191, 97, 106, 0.30);
+  }
+}
+
+/* ── ConnectionStatus pseudo-element dot patterns ──────────────────────── */
+.conn-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.conn-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.conn-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0;
+}
+
+.conn-dot--connected::before {
+  background: var(--nord-green);
+  box-shadow: 0 0 6px rgba(163, 190, 140, 0.6);
+}
+.conn-dot--connected::after {
+  background: var(--nord-green);
+  animation: pulse-glow-green 2.4s ease-in-out infinite;
+}
+
+.conn-dot--reconnecting::before {
+  background: var(--nord-yellow);
+  box-shadow: 0 0 6px rgba(235, 203, 139, 0.5);
+  animation: pulse-beat-yellow 1.2s ease-in-out infinite;
+}
+.conn-dot--reconnecting::after {
+  background: var(--nord-yellow);
+  animation: pulse-glow-yellow 1.2s ease-in-out infinite;
+}
+
+.conn-dot--disconnected::before {
+  background: var(--nord-red);
+  box-shadow: 0 0 6px rgba(191, 97, 106, 0.5);
+  animation: pulse-beat-red 1s ease-in-out infinite;
+}
+.conn-dot--disconnected::after {
+  background: var(--nord-red);
+  animation: pulse-glow-red 1s ease-in-out infinite;
+}
+
+[data-theme="light"] .conn-status--connected { color: #5a8a42; }
+[data-theme="light"] .conn-status--reconnecting { color: #b88e2f; }
+[data-theme="light"] .conn-status--disconnected { color: #a5454d; }
+
+/* ── AlertCard critical dot ────────────────────────────────────────────── */
+.alert-dot--critical {
+  position: relative;
+}
+
+.alert-dot--critical::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #bf616a;
+  animation: critical-dot-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.alert-dot--critical .alert-dot__core {
+  position: relative;
+  z-index: 1;
+  background: #bf616a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-dot--critical::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ── Toast accent bar (pseudo-element) ─────────────────────────────────── */
+.toast-accent::before {
+  content: '';
+  flex-shrink: 0;
+  width: 3px;
+  border-radius: 3px;
+  align-self: stretch;
+  background: var(--toast-accent, var(--accent-blue));
+}
+
+/* ── LiveFeedPanel chip pulse dot ──────────────────────────────────────── */
+.chip-pulse-dot::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--accent-emerald);
+  margin-right: 0.4rem;
+  animation: chip-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-pulse-dot::before {
+    animation: none;
+  }
+}
+
+/* ── DevMockControls hazard stripe ─────────────────────────────────────── */
+.dmc-hazard-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(203, 139, 47, 0.65) 0px,
+    rgba(203, 139, 47, 0.65) 5px,
+    rgba(27, 35, 48, 0.18) 5px,
+    rgba(27, 35, 48, 0.18) 10px
+  );
+  pointer-events: none;
+}
+
+[data-theme='dark'] .dmc-hazard-border::before {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(240, 180, 88, 0.55) 0px,
+    rgba(240, 180, 88, 0.55) 5px,
+    rgba(237, 243, 255, 0.06) 5px,
+    rgba(237, 243, 255, 0.06) 10px
+  );
 }

@@ -1,0 +1,30 @@
+{
+  "overview": {
+    "operationalMetrics": "Operational Metrics",
+    "branchHealthSnapshot": "Branch health snapshot",
+    "executiveSummary": "Executive summary",
+    "managementFocus": "Management Focus",
+    "todaysHighlights": "Today's highlights",
+    "actionableSummary": "Actionable summary"
+  },
+  "liveMonitoring": {
+    "title": "Live Monitoring",
+    "description": "Real-time AI behavioral analysis streams",
+    "currentQueue": "Current interaction queue",
+    "streamingAnalysis": "Streaming analysis",
+    "networkStreamStatus": "Network Stream Status",
+    "nodesTransmitting": "{{count}} nodes transmitting at 60fps",
+    "systemOffline": "System offline. Awaiting video sources."
+  },
+  "emptyStates": {
+    "awaitingData": "Awaiting Data",
+    "liveInteractionDataDesc": "Live interaction data will appear here once monitoring detects activity matching your filters."
+  },
+  "interaction": {
+    "selectedInteraction": "Selected Interaction",
+    "currentStation": "Current station",
+    "observedBehavior": "Observed behavior",
+    "aiInterpretation": "AI interpretation",
+    "score": "Score"
+  }
+}

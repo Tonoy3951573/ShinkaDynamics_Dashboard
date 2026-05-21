@@ -7,7 +7,10 @@ import {
   Activity, 
   AlertTriangle,
   Cpu,
-  Download
+  Download,
+  Play,
+  Square,
+  Trash2
 } from 'lucide-react'
 import { useHLSPlayer } from '../../hooks/useHLSPlayer'
 import { useCameraStatus } from '../../hooks/useCameraStatus'
@@ -26,7 +29,7 @@ import { useDashboard } from '../../context/useDashboard'
  */
 export function CameraFeed({ camera }) {
   const { id, name, location, type } = camera
-  const { socket, dashboardData } = useDashboard()
+  const { socket, dashboardData, removeCamera } = useDashboard()
 
   const containerRef = useRef(null)
   const videoRef = useRef(null)
@@ -51,7 +54,9 @@ export function CameraFeed({ camera }) {
     }
   }, [])
 
-  const isActiveStream = isIntersecting
+  const [isStreamEnabled, setIsStreamEnabled] = useState(true)
+
+  const isActiveStream = isIntersecting && isStreamEnabled
 
   // ── 2. Telemetry and Stream Lifecycle ──────────────────────────────
   const { status, latencyMs, jitterMs, fps } = useCameraStatus(
@@ -113,6 +118,12 @@ export function CameraFeed({ camera }) {
     setWebcamError(null)
 
     let activeStream = null
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setWebcamLoading(false)
+      setWebcamError('Webcam access requires a secure context (HTTPS) or localhost.')
+      return
+    }
 
     navigator.mediaDevices
       .getUserMedia({ 
@@ -257,6 +268,22 @@ export function CameraFeed({ camera }) {
         className="h-full w-full object-cover bg-black/60"
       />
 
+      {/* ── Paused Screen Overlay State ────────────────────────────────── */}
+      {!isStreamEnabled && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md">
+          <Square className="mb-3 h-10 w-10 text-red-500" />
+          <h4 className="font-display text-xs font-bold text-white uppercase tracking-wider">Stream Suspended</h4>
+          <p className="mt-1 text-[10px] text-gray-400 max-w-xs mb-3">Connection manually stopped by operator.</p>
+          <button
+            onClick={() => setIsStreamEnabled(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-xs font-bold text-emerald-400 transition hover:bg-emerald-500/20 active:scale-95 cursor-pointer z-40"
+          >
+            <Play className="h-3 w-3" />
+            Resume Stream
+          </button>
+        </div>
+      )}
+
       {/* ── Loading Overlay State ────────────────────────────────────── */}
       {isStreamLoading && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
@@ -329,6 +356,19 @@ export function CameraFeed({ camera }) {
 
         {/* Stream Actions */}
         <div className="flex items-center gap-2">
+          {/* Start / Stop Toggle */}
+          <button
+            onClick={() => setIsStreamEnabled(!isStreamEnabled)}
+            title={isStreamEnabled ? "Stop Stream" : "Start Stream"}
+            className={`rounded-lg p-2 border border-white/5 backdrop-blur-md transition cursor-pointer ${
+              isStreamEnabled 
+                ? 'bg-black/60 text-white hover:bg-white/10 hover:text-red-400' 
+                : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/35 border-emerald-500/30'
+            }`}
+          >
+            {isStreamEnabled ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </button>
+
           {/* Snapshot Trigger */}
           {status === 'online' && (
             <button
@@ -344,9 +384,22 @@ export function CameraFeed({ camera }) {
           <button
             onClick={toggleFullscreen}
             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-            className="rounded-lg bg-black/60 p-2 text-white border border-white/5 backdrop-blur-md hover:bg-white/10 hover:text-cyan-400 transition"
+            className="rounded-lg bg-black/60 p-2 text-white border border-white/5 backdrop-blur-md hover:bg-white/10 hover:text-cyan-400 transition cursor-pointer"
           >
             {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </button>
+
+          {/* Remove Camera Trigger */}
+          <button
+            onClick={() => {
+              if (confirm(`Are you sure you want to permanently remove camera "${name}"?`)) {
+                removeCamera(id)
+              }
+            }}
+            title="Remove Camera"
+            className="rounded-lg bg-black/60 p-2 text-white border border-white/5 backdrop-blur-md hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition cursor-pointer"
+          >
+            <Trash2 className="h-4 w-4" />
           </button>
         </div>
       </div>

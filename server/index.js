@@ -12,9 +12,12 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import employeeRoutes from './routes/employees.js'
-import cameraRoutes from './routes/cameras.js'
+import cameraRoutes, { startCameraHealthCheck, handleWebcamHeartbeat } from './routes/cameras.js'
 import analyticsRoutes from './routes/analytics.js'
 import alertRoutes from './routes/alerts.js'
+import complianceRoutes from './routes/compliance.js'
+import reportRoutes from './routes/reports.js'
+import adminRoutes from './routes/admin.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -52,14 +55,6 @@ const generalLimiter = rateLimit({
   message: { error: 'Too many requests. Please try again later.' },
 })
 
-// Auth limiter: 5 requests per 15 minutes per IP (brute-force protection)
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many authentication attempts. Please try again later.' },
-})
 
 app.use('/api', generalLimiter)
 
@@ -97,6 +92,19 @@ io.on('connection', (socket) => {
   // Join an organization-scoped room for multi-tenant broadcasting
   socket.join(`org:${orgId}`)
 
+  socket.on('camera:heartbeat', ({ cameraId }) => {
+    handleWebcamHeartbeat(cameraId);
+  });
+
+  socket.on('admin:join_tenant_room', ({ targetOrgId }) => {
+    if (socket.user.role !== 'super_user') {
+      return socket.emit('error', 'Super User privileges required');
+    }
+    console.log(`[ws-admin] Super User ${socket.user.id} joining room org:${targetOrgId}`);
+    socket.join(`org:${targetOrgId}`);
+    socket.emit('admin:room_joined', { orgId: targetOrgId });
+  });
+
   socket.on('disconnect', (reason) => {
     console.log(`[ws] client disconnected — reason: ${reason}`)
   })
@@ -112,11 +120,46 @@ app.get('/api/health', (req, res) => {
 
 // ── Modular API Routes ───────────────────────────────────────────────────────
 // Auth routes get the stricter rate limiter
-app.use('/api/auth', authLimiter, authRoutes)
+app.use('/api/auth', authRoutes)
 app.use('/api/employees', employeeRoutes)
 app.use('/api/analytics', analyticsRoutes)
 app.use('/api/cameras', cameraRoutes)
 app.use('/api/alerts', alertRoutes)
+app.use('/api/compliance', complianceRoutes)
+app.use('/api', reportRoutes)
+app.use('/api', adminRoutes)
+
+// ── 2b. Remote Remediation Engine (Express/Socket.IO) ──────────────────────
+import { authenticateToken, requireSuperUser } from './middleware/auth.js'
+import { db } from './db.js'
+
+app.post('/api/admin/remote-fix', authenticateToken, requireSuperUser, (req, res) => {
+  const { action, targetOrgId, targetCameraId } = req.body;
+
+  if (!action || !targetOrgId) {
+    return res.status(400).json({ error: 'Action and targetOrgId are required' });
+  }
+
+  if (action === 'RESTART_HLS_PIPELINE') {
+    io.to(`org:${targetOrgId}`).emit('stream:force_reconnect', { cameraId: targetCameraId });
+    return res.json({ message: `Successfully emitted HLS stream force reconnect event to room org:${targetOrgId} for camera ${targetCameraId}` });
+  }
+
+  if (action === 'FLUSH_ALERTS') {
+    db.run('DELETE FROM alerts WHERE organization_id = ?', [targetOrgId], (err) => {
+      if (err) {
+        console.error('[remote-fix] Alert flush failed:', err);
+        return res.status(500).json({ error: 'Failed to flush alerts in SQLite' });
+      }
+
+      io.to(`org:${targetOrgId}`).emit('state:refresh_dashboard');
+      return res.json({ message: `Successfully deleted alerts database records and broadcasted state refresh for org ${targetOrgId}` });
+    });
+    return;
+  }
+
+  res.status(400).json({ error: `Unsupported remote remediation action: ${action}` });
+});
 
 // ── Production Static File Serving ───────────────────────────────────────────
 // In production, serve the Vite-built frontend from dist/.
@@ -141,6 +184,8 @@ httpServer.listen(config.PORT, () => {
   if (config.NODE_ENV === 'production') {
     console.log(`[server] Serving static files from dist/`)
   }
+  // Start the Active Camera Health System
+  startCameraHealthCheck(io)
 })
 
 export { io }

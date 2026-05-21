@@ -7,15 +7,20 @@ import {
   ShieldCheck,
   UsersRound,
   X,
+  ShieldAlert,
+  HelpCircle,
 } from 'lucide-react'
 import { cn, surfaceCard } from '../../lib/ui'
 import { useDashboard } from '../../context/useDashboard'
+import { useAuth } from '../../context/AuthContext'
 
 const navItemHrefByLabel = {
   Overview: '/',
   'Live Monitoring': '/monitoring',
   'Employee Scoring': '/employees',
   Alerts: '/alerts',
+  'Policy & Audit': '/policy',
+  'Super Admin': '/admin',
 }
 
 const navIconByLabel = {
@@ -24,15 +29,24 @@ const navIconByLabel = {
   'Employee Scoring': UsersRound,
   Alerts: BellRing,
   'Policy & Audit': ShieldCheck,
+  'Super Admin': ShieldAlert,
 }
 
-export function Sidebar({ navItems, activeView }) {
+export function Sidebar({ navItems, activeView, onReportClick }) {
+  const { user } = useAuth()
   const {
     mobileSidebarOpen,
     setMobileSidebarOpen,
     sidebarCollapsed,
     toggleSidebarCollapsed,
   } = useDashboard()
+
+  const visibleNavItems = [...navItems]
+  if (user?.role === 'super_user') {
+    if (!visibleNavItems.some(item => item.label === 'Super Admin')) {
+      visibleNavItems.push({ label: 'Super Admin', active: activeView === 'admin' })
+    }
+  }
 
   const handleBrandToggle = () => {
     if (
@@ -101,7 +115,7 @@ export function Sidebar({ navItems, activeView }) {
       </div>
 
       <nav className="grid gap-2" aria-label="Primary">
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const href = navItemHrefByLabel[item.label] ?? null
           const Icon = navIconByLabel[item.label]
           const isActive =
@@ -111,6 +125,7 @@ export function Sidebar({ navItems, activeView }) {
               (activeView === 'employees' ||
                 activeView === 'employee-profile')) ||
             (href === '/alerts' && activeView === 'alerts') ||
+            (href === '/policy' && activeView === 'policy') ||
             (item.active && activeView === 'overview')
 
           const baseLinkClass = cn(
@@ -202,6 +217,28 @@ export function Sidebar({ navItems, activeView }) {
             </NavLink>
           )
         })}
+
+        <button
+          onClick={onReportClick}
+          className={cn(
+            'group mt-4 flex items-center gap-3 rounded-lg p-2 text-left text-sm font-semibold transition-[width,background-color] duration-300 ease-out text-[color:var(--text)] hover:bg-[color:var(--bg-strong)] focus-visible:outline-none overflow-hidden whitespace-nowrap border border-dashed border-[color:var(--line)]',
+            sidebarCollapsed ? 'w-full lg:w-12' : 'w-full lg:w-[224px]',
+          )}
+          title={sidebarCollapsed ? 'Report Issue' : undefined}
+          type="button"
+        >
+          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color:var(--line)] bg-[color:var(--bg-panel)] text-[color:var(--muted)] group-hover:border-transparent group-hover:bg-[color:var(--accent-blue-soft)] group-hover:text-[color:var(--accent-blue)]">
+            <HelpCircle className="h-4 w-4" strokeWidth={2.1} />
+          </span>
+          <span
+            className={cn(
+              'transition-opacity duration-200',
+              sidebarCollapsed ? 'lg:opacity-0' : 'opacity-100 lg:delay-100',
+            )}
+          >
+            Report Issue
+          </span>
+        </button>
       </nav>
 
       <div

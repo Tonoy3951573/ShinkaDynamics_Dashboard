@@ -87,10 +87,53 @@ db.serialize(() => {
     )
   `)
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS compliance_settings (
+      organization_id TEXT PRIMARY KEY,
+      consent_active INTEGER DEFAULT 1,
+      supervisor_gate INTEGER DEFAULT 1,
+      audio_recording INTEGER DEFAULT 0,
+      smile_sensitivity INTEGER DEFAULT 70,
+      pitch_threshold INTEGER DEFAULT 65,
+      retention_days INTEGER DEFAULT 30,
+      FOREIGN KEY(organization_id) REFERENCES organizations(id)
+    )
+  `)
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS compliance_audits (
+      id TEXT PRIMARY KEY,
+      organization_id TEXT,
+      actor TEXT,
+      action TEXT,
+      target TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      status TEXT DEFAULT 'Success',
+      FOREIGN KEY(organization_id) REFERENCES organizations(id)
+    )
+  `)
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS system_reports (
+      id TEXT PRIMARY KEY,
+      organization_id TEXT,
+      reporter_id TEXT,
+      title TEXT,
+      description TEXT,
+      category TEXT CHECK(category IN ('bug', 'stream_failure', 'other')),
+      status TEXT DEFAULT 'open',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(organization_id) REFERENCES organizations(id),
+      FOREIGN KEY(reporter_id) REFERENCES users(id)
+    )
+  `)
+
   // ── Performance indexes for tenant-scoped queries ─────────────────────
   db.run('CREATE INDEX IF NOT EXISTS idx_users_org ON users(organization_id)')
   db.run('CREATE INDEX IF NOT EXISTS idx_employees_org ON employees(organization_id)')
   db.run('CREATE INDEX IF NOT EXISTS idx_cameras_org ON cameras(organization_id)')
   db.run('CREATE INDEX IF NOT EXISTS idx_alerts_org ON alerts(organization_id)')
   db.run('CREATE INDEX IF NOT EXISTS idx_alerts_org_status ON alerts(organization_id, status)')
+  db.run('CREATE INDEX IF NOT EXISTS idx_compliance_audits_org ON compliance_audits(organization_id)')
+  db.run('CREATE INDEX IF NOT EXISTS idx_system_reports_org ON system_reports(organization_id)')
 })

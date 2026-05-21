@@ -11,8 +11,12 @@ if (process.env.NODE_ENV === 'production') {
 async function seed() {
   const saltRounds = 10;
   const adminPassword = await bcrypt.hash('admin123', saltRounds);
+  const superPassword = await bcrypt.hash('admin123', saltRounds);
 
   db.serialize(() => {
+    db.run('DROP TABLE IF EXISTS system_reports')
+    db.run('DROP TABLE IF EXISTS compliance_settings')
+    db.run('DROP TABLE IF EXISTS compliance_audits')
     db.run('DROP TABLE IF EXISTS alerts')
     db.run('DROP TABLE IF EXISTS cameras')
     db.run('DROP TABLE IF EXISTS employees')
@@ -95,9 +99,17 @@ async function seed() {
     const userId = 'user-1'
     const stmtUser = db.prepare('INSERT INTO users (id, organization_id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)')
     stmtUser.run(userId, orgId, 'Admin', 'admin@shinkadynamics.com', adminPassword, 'admin')
+    
+    // Seed a Super User
+    const superUserId = 'super-user-1'
+    stmtUser.run(superUserId, orgId, 'Super Admin', 'superadmin@shinkadynamics.com', superPassword, 'super_user', (err) => {
+      if (err) console.error('Failed to seed super user:', err)
+    })
+
     stmtUser.finalize(() => {
       console.log('Database ready.')
-      console.log('Login: admin@shinkadynamics.com / admin123')
+      console.log('Admin Login: admin@shinkadynamics.com / admin123')
+      console.log('Super Admin Login: superadmin@shinkadynamics.com / admin123')
       db.close()
     })
   })

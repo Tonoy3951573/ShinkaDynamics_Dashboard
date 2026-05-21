@@ -8,13 +8,17 @@ import { EmployeesPage } from './pages/EmployeesPage'
 import { LiveMonitoringPage } from './pages/LiveMonitoringPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { AlertsPage } from './pages/AlertsPage'
-import { AuthProvider } from './context/AuthContext'
+import { PolicyAuditPage } from './pages/PolicyAuditPage'
+import SuperAdminDashboard from './pages/SuperAdminDashboard'
+import ReportIssueModal from './components/dashboard/ReportIssueModal'
+import { AuthProvider, useAuth } from './context/AuthContext'
+import SuperAdminLayout from './layouts/SuperAdminLayout'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { ErrorBoundary } from './components/layout/ErrorBoundary'
 import { LoginPage } from './pages/auth/LoginPage'
 import { SignupPage } from './pages/auth/SignupPage'
 import { ToastNotification } from './components/layout/ToastNotification'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { WifiOff, Loader2 } from 'lucide-react'
 
 // Loaded & rendered only in development.
@@ -29,6 +33,11 @@ const DevMockControls = import.meta.env.DEV
   : null
 
 function AppShell() {
+  const { user } = useAuth()
+  if (user && user.role === 'super_user') {
+    return <SuperAdminLayout />
+  }
+
   const {
     activeView,
     alerts,
@@ -48,6 +57,8 @@ function AppShell() {
     (a) => (a.severity ?? '').toLowerCase() === 'critical' && a.status === 'active',
   )
 
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+
   return (
     <div
       className={`app-shell${hasCritical ? ' app-shell--critical' : ''}${
@@ -65,7 +76,11 @@ function AppShell() {
       <div
         className="min-h-screen lg:flex lg:items-start"
       >
-        <Sidebar navItems={dashboardData.navigation} activeView={activeView} />
+        <Sidebar 
+          navItems={dashboardData.navigation} 
+          activeView={activeView} 
+          onReportClick={() => setIsReportModalOpen(true)} 
+        />
         <div className="min-w-0 flex-1 px-4 py-5 sm:px-6 sm:py-7 lg:px-7 lg:py-7 xl:px-8 xl:pb-10">
           <Header />
           <main className="space-y-6">
@@ -79,6 +94,8 @@ function AppShell() {
                 <Route path="/monitoring" element={<LiveMonitoringPage />} />
                 <Route path="/employees" element={<EmployeesPage />} />
                 <Route path="/alerts" element={<AlertsPage />} />
+                <Route path="/policy" element={<PolicyAuditPage />} />
+                <Route path="/admin" element={<SuperAdminDashboard />} />
                 <Route
                   path="/employees/:employeeId"
                   element={
@@ -95,6 +112,12 @@ function AppShell() {
       </div>
       {/* Global toast stack – always mounted, self-manages visibility */}
       <ToastNotification />
+      
+      {/* Report Issue Modal */}
+      <ReportIssueModal 
+        isOpen={isReportModalOpen} 
+        onClose={() => setIsReportModalOpen(false)} 
+      />
       {/* Dev-only floating mock controls – absent in production */}
       {DevMockControls && (
         <Suspense fallback={null}>

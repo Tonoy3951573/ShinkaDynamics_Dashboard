@@ -6,6 +6,15 @@ import { z } from 'zod';
 import { db } from '../db.js';
 import { config } from '../config.js';
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
+import rateLimit from 'express-rate-limit';
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many authentication attempts. Please try again later.' },
+});
 
 const router = express.Router();
 
@@ -43,7 +52,7 @@ function validate(schema, body, res) {
 }
 
 // ── POST /signup ─────────────────────────────────────────────────────────────
-router.post('/signup', async (req, res) => {
+router.post('/signup', authLimiter, async (req, res) => {
   const data = validate(signupSchema, req.body, res);
   if (!data) return;
 
@@ -94,7 +103,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // ── POST /login ──────────────────────────────────────────────────────────────
-router.post('/login', (req, res) => {
+router.post('/login', authLimiter, (req, res) => {
   const data = validate(loginSchema, req.body, res);
   if (!data) return;
 

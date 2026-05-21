@@ -1,0 +1,160 @@
+/* ── ReportIssueModal Glassmorphic Nord Style ── */
+
+.rim-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background-color: rgba(46, 52, 64, 0.4); /* Polar Night with transparency */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: rim-fade-in 0.3s ease-out forwards;
+}
+
+.rim-modal {
+  width: 90%;
+  max-width: 480px;
+  background: rgba(43, 76, 94, 0.15); /* Frost/Polar transparent mix */
+  background-image: linear-gradient(135deg, rgba(59, 66, 82, 0.7) 0%, rgba(46, 52, 64, 0.8) 100%);
+  border: 1px solid rgba(229, 233, 240, 0.15); /* Subtle Snow Storm border */
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.35);
+  animation: rim-slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  color: #ECEFF4; /* Snow Storm light text */
+  font-family: inherit;
+}
+
+.rim-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.rim-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ECEFF4;
+  margin: 0;
+}
+
+.rim-close-btn {
+  background: transparent;
+  border: none;
+  color: #D8DEE9;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s ease;
+}
+
+.rim-close-btn:hover {
+  background: rgba(229, 233, 240, 0.1);
+  color: #BF616A; /* Aurora Red on hover close */
+  transform: rotate(90deg);
+}
+
+.rim-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rim-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rim-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #E5E9F0;
+  letter-spacing: 0.01em;
+}
+
+.rim-input,
+.rim-select,
+.rim-textarea {
+  background: rgba(46, 52, 64, 0.6);
+  border: 1px solid rgba(136, 192, 208, 0.2); /* Frost cyan border */
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  color: #ECEFF4;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.rim-input:focus,
+.rim-select:focus,
+.rim-textarea:focus {
+  border-color: #88C0D0; /* Active Frost */
+  box-shadow: 0 0 0 3px rgba(136, 192, 208, 0.2);
+  background: rgba(46, 52, 64, 0.8);
+}
+
+.rim-select option {
+  background: #2E3440;
+  color: #ECEFF4;
+}
+
+.rim-textarea {
+  resize: none;
+  min-height: 110px;
+}
+
+.rim-submit-btn {
+  background: linear-gradient(135deg, #81A1C1 0%, #5E81AC 100%); /* Frost blue gradient */
+  border: none;
+  border-radius: 12px;
+  padding: 0.85rem;
+  font-weight: 700;
+  color: #ECEFF4;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.rim-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(94, 129, 172, 0.35);
+}
+
+.rim-submit-btn:active {
+  transform: translateY(0);
+}
+
+.rim-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Animations */
+@keyframes rim-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rim-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

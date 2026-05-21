@@ -17,6 +17,7 @@ import { io } from 'socket.io-client'
  */
 export function useSocket(token, onEvent) {
   const [socketStatus, setSocketStatus] = useState('disconnected')
+  const [socketInstance, setSocketInstance] = useState(null)
   const onEventRef = useRef(onEvent)
 
   // Keep the callback ref fresh without re-triggering the connection effect.
@@ -28,6 +29,7 @@ export function useSocket(token, onEvent) {
     // No token → stay disconnected, clean up any existing socket.
     if (!token) {
       setSocketStatus('disconnected')
+      setSocketInstance(null)
       return
     }
 
@@ -41,6 +43,8 @@ export function useSocket(token, onEvent) {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 8000,
     })
+
+    setSocketInstance(socket)
 
     // ── Lifecycle events ───────────────────────────────────────────────
     socket.on('connect', () => {
@@ -77,6 +81,8 @@ export function useSocket(token, onEvent) {
       'feed:update',
       'employee:score_update',
       'insight:refresh',
+      'admin:force_restart',
+      'state:refresh',
     ]
 
     domainEvents.forEach((eventName) => {
@@ -90,8 +96,9 @@ export function useSocket(token, onEvent) {
       domainEvents.forEach((eventName) => socket.off(eventName))
       socket.disconnect()
       setSocketStatus('disconnected')
+      setSocketInstance(null)
     }
   }, [token]) // Re-run whenever the token changes
 
-  return { socketStatus }
+  return { socketStatus, socket: socketInstance }
 }

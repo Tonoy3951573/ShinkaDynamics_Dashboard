@@ -6,6 +6,29 @@ import { Building2, Mail, Lock, ArrowRight, User, Eye, EyeOff } from 'lucide-rea
 const inputClass =
   'block w-full rounded-xl border-0 bg-[color:var(--bg)] py-2.5 pl-10 pr-3 text-[color:var(--text)] ring-1 ring-inset ring-[color:var(--line)] placeholder:text-[color:var(--muted)] focus:ring-2 focus:ring-inset focus:ring-[color:var(--accent-blue)] sm:text-sm sm:leading-6';
 
+const Field = ({ id, label, icon: Icon, type = 'text', value, onChange, placeholder, extra }) => (
+  <div>
+    <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-[color:var(--text)]">
+      {label}
+    </label>
+    <div className="relative">
+      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <Icon className="h-4 w-4 text-[color:var(--muted)]" />
+      </div>
+      <input
+        id={id}
+        type={type}
+        required
+        value={value}
+        onChange={onChange}
+        className={inputClass}
+        placeholder={placeholder}
+      />
+      {extra}
+    </div>
+  </div>
+);
+
 export const SignupPage = () => {
   const [fullName, setFullName] = useState('');
   const [orgName, setOrgName] = useState('');
@@ -37,29 +60,6 @@ export const SignupPage = () => {
       setIsSubmitting(false);
     }
   };
-
-  const Field = ({ id, label, icon: Icon, type = 'text', value, onChange, placeholder, extra }) => (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-[color:var(--text)]">
-        {label}
-      </label>
-      <div className="relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-          <Icon className="h-4 w-4 text-[color:var(--muted)]" />
-        </div>
-        <input
-          id={id}
-          type={type}
-          required
-          value={value}
-          onChange={onChange}
-          className={inputClass}
-          placeholder={placeholder}
-        />
-        {extra}
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[color:var(--bg)] p-4">

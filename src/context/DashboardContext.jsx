@@ -116,6 +116,14 @@ function getActiveViewFromPathname(pathname) {
     return 'alerts'
   }
 
+  if (pathname === '/policy') {
+    return 'policy'
+  }
+
+  if (pathname === '/admin') {
+    return 'admin'
+  }
+
   return 'overview'
 }
 
@@ -148,6 +156,30 @@ export function DashboardProvider({ children }) {
             [payload.cameraId]: payload.detections
           }
         }))
+        break
+
+      case 'camera:online':
+      case 'camera:offline':
+        setDashboardData((prev) => {
+          const updatedCameras = (prev.cameras || []).map((cam) =>
+            cam.id === payload.cameraId ? { ...cam, status: payload.status } : cam
+          );
+          return { ...prev, cameras: updatedCameras };
+        });
+        break
+
+      case 'camera:stream_error':
+        setAlerts((current) => [
+          {
+            id: `err-${Date.now()}`,
+            severity: 'Medium',
+            title: `Camera connection error: ${payload.name || payload.cameraId}`,
+            detail: payload.error || 'Connection to stream was lost.',
+            status: 'active',
+            created_at: new Date().toISOString()
+          },
+          ...current
+        ]);
         break
 
       case 'feed:update':
@@ -196,6 +228,15 @@ export function DashboardProvider({ children }) {
         })
         break
 
+      case 'state:refresh':
+        fetchAlerts()
+        refreshAnalytics()
+        break
+
+      case 'admin:force_restart':
+        // Handled directly inside individual CameraFeed sub-components
+        break
+
       default:
         console.warn('[socket] unhandled event:', event, payload)
     }
@@ -207,6 +248,7 @@ export function DashboardProvider({ children }) {
   const [mockSocketStatus, setMockSocketStatus] = useState(null)
   const realSocket = useSocket(user ? localStorage.getItem('shinka-token') : null, handleSocketEvent)
   const socketStatus = mockSocketStatus || realSocket.socketStatus
+  const socket = realSocket.socket
 
   // Extend simulateEvent to handle disconnect toggle
   const simulateEvent = useCallback(
@@ -607,6 +649,7 @@ export function DashboardProvider({ children }) {
       sidebarCollapsed,
       simulateEvent,
       socketStatus,
+      socket,
       sortedEmployees,
       themeMode,
       toggleMobileSidebar,
@@ -630,6 +673,7 @@ export function DashboardProvider({ children }) {
       sidebarCollapsed,
       simulateEvent,
       socketStatus,
+      socket,
       sortedEmployees,
       themeMode,
     ],
